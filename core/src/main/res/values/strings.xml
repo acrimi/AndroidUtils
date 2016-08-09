@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="media_picker_option_photo_camera">Take Photo</string>
+    <string name="media_picker_option_photo_library">Choose Photo</string>
+    <string name="media_picker_option_video">Take Video</string>
+    <string name="not_supported_title">Error</string>
+    <string name="not_supported_message">This action is not supported on your device.</string>
+    <string name="permission_denied">Permission Denied</string>
+    <string name="camera_permission_msg">Cannot access camera without permission</string>
+    <string name="dialog_button_ok">OK</string>
+</resources>

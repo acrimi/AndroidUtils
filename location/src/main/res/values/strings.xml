@@ -1,0 +1,5 @@
+<resources>
+    <string name="alert_button_ok">OK</string>
+    <string name="location_error_title">Permission Denied</string>
+    <string name="location_error_msg">Could not retrieve current location</string>
+</resources>
