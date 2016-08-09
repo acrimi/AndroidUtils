@@ -31,9 +31,9 @@ uploadArchives {
         mavenDeployer {
             pom.groupId = 'com.isbx'
             pom.artifactId = 'android-utils-location'
-            pom.version = version
+            pom.version = android.defaultConfig.versionName
             pom.packaging = 'aar'
-            repository(url: "file:../artifacts/")
+            repository(url: "file:./archives/")
         }
     }
 }
