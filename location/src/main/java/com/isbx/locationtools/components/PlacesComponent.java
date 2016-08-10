@@ -11,15 +11,13 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.data.DataBufferUtils;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.AutocompletePrediction;
 import com.google.android.gms.location.places.AutocompletePredictionBuffer;
+import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceBuffer;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.isbx.androidtools.utils.ActivityLifecycleListener;
-import com.isbx.locationtools.AutocompleteCallback;
-import com.isbx.locationtools.PlaceCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -124,5 +122,14 @@ public class PlacesComponent extends ActivityLifecycleListener implements Google
                 callback.onPlaceReceived(places.get(0));
             }
         });
+    }
+
+
+    public interface AutocompleteCallback {
+        void onAutocompletePredictionsReceived(List<AutocompletePrediction> autocompletePredictionList);
+    }
+
+    public interface PlaceCallback {
+        void onPlaceReceived(Place place);
     }
 }
