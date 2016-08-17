@@ -27,9 +27,11 @@ import java.util.Locale;
  * <li>An explicit call to {@link ImageResizer#clearFiles()} is made</li>
  * </ul>
  *
+ * <p>
  * For this reason, it is recommended to take whatever action is needed on the resized files
  * immediately after the scaling operation is completed, or copy them to a persistent location if
  * they are needed long-term.
+ * </p>
  */
 public class ImageResizer {
 

@@ -1,8 +1,10 @@
 package com.isbx.androidtools.media;
 
 /**
+ * <p>
  * A configuration class for how an image should be resized by {@link ImageResizer}. The default
  * configuration requests three output sizes with the following dimensions:
+ * </p>
  *
  * <ul>
  * <li>small - 256x256</li>

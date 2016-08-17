@@ -63,13 +63,11 @@ import java.io.InputStream;
  * </p>
  *
  * <pre>
- * {@code
- * @literal @Override
- *     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
- *         super.onActivityResult(requestCode, resultCode, data);
- *         mediaPicker.onActivityResult(requestCode, resultCode, data);
- *     }
- * }
+ * <code>&#064;Override
+ * protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+ *     super.onActivityResult(requestCode, resultCode, data);
+ *     mediaPicker.onActivityResult(requestCode, resultCode, data);
+ * }</code>
  * </pre>
  *
  * <p>
@@ -79,13 +77,11 @@ import java.io.InputStream;
  * </p>
  *
  * <pre>
- * {@code
- * @literal @Override
- *     protected void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
- *         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
- *         mediaPicker.onRequestPermissionsResult(requestCode, permissions, grantResults);
- *     }
- * }
+ * <code>&#064;Override
+ * protected void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+ *     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+ *     mediaPicker.onRequestPermissionsResult(requestCode, permissions, grantResults);
+ * }</code>
  * </pre>
  *
  * <p>
@@ -109,7 +105,7 @@ public class MediaPicker implements ActivityCompat.OnRequestPermissionsResultCal
     private static final String CACHE_FILE_NAME = "mediapicker_pic";
 
     /**
-     * Supported media sources.
+     * The supported media sources.
      */
     public enum MediaType {
         /**
@@ -210,9 +206,11 @@ public class MediaPicker implements ActivityCompat.OnRequestPermissionsResultCal
      * directly from either {@link Activity#onActivityResult(int, int, Intent)} or
      * {@link Fragment#onActivityResult(int, int, Intent)}.
      *
-     * @param requestCode
-     * @param resultCode
-     * @param data
+     * @param requestCode The requestCode that was passed in to startActivityForResult()
+     * @param resultCode The resultCode from the returning activity, set by
+     *                   {@link Activity#setResult(int)}
+     * @param data The data {@link Intent} from the returning activity, set by
+     *             {@link Activity#setResult(int, Intent)}
      *
      * @see Activity#onActivityResult(int, int, Intent)
      * @see Fragment#onActivityResult(int, int, Intent)
@@ -296,11 +294,13 @@ public class MediaPicker implements ActivityCompat.OnRequestPermissionsResultCal
     }
 
     /**
+     * <p>
      * Handles results for requesting the {@link android.Manifest.permission#CAMERA} permission.
      * This should be invoked directly from either
      * {@link Activity#onRequestPermissionsResult(int, String[], int[])} or
      * {@link Fragment#onRequestPermissionsResult(int, String[], int[])} if and only if you satisfy
      * <strong>both</strong> of the following conditions:
+     * </p>
      *
      * <ul>
      * <li>Your app's {@code targetSdkVersion} is set to 23 or higher</li>

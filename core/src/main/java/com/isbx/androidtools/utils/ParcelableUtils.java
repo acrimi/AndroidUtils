@@ -33,8 +33,9 @@ public class ParcelableUtils {
      *
      * @param in The parcel to read from
      * @param loader A ClassLoader from which to instantiate the Parcelable
-     * object, or null for the default class loader.
-     * @return Returns the newly created Parcelable, or null if a null
+     *               object, or null for the default class loader.
+     * @param <T> The type of {@link Parcelable} expected
+     * @return Returns the newly created {@link Parcelable}, or null if a null
      * object has been written.
      */
     @Nullable
