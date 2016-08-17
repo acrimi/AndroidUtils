@@ -11,7 +11,25 @@ import java.io.OutputStream;
 import java.util.Locale;
 
 /**
- * Created by alexs_000 on 5/16/2016.
+ * A convenience class to resize an image to a new resolution while maintaining aspect ratio. Can be
+ * configured to output up to three different target resolutions via an {@link ImageResizeConfig}
+ * object.
+ *
+ * <p>
+ * The resized images are saved as temporary files to the app's internal private storage. The
+ * persistence of these files is not guaranteed, and they may be overwritten at any time by any of
+ * the following actions:
+ * </p>
+ *
+ * <ul>
+ * <li>The ImageResizer is used to process several different images consecutively</li>
+ * <li>Another ImageResizer is used to process an image</li>
+ * <li>An explicit call to {@link ImageResizer#clearFiles()} is made</li>
+ * </ul>
+ *
+ * For this reason, it is recommended to take whatever action is needed on the resized files
+ * immediately after the scaling operation is completed, or copy them to a persistent location if
+ * they are needed long-term.
  */
 public class ImageResizer {
 
@@ -23,15 +41,45 @@ public class ImageResizer {
 
     private int savedFiles = 0;
 
+    /**
+     * Creates a new ImageResizer that will use the given config to scale images.
+     *
+     * @param context The {@link Context} to use for reading/writing the image files
+     * @param config A {@link ImageResizeConfig} object specifying how this ImageResizer should
+     *               process images
+     *
+     * @see ImageResizeConfig
+     */
     public ImageResizer(Context context, ImageResizeConfig config) {
         this.context = context;
         this.config = config;
     }
 
+    /**
+     * Creates a new ImageResizer with a default {@link ImageResizeConfig}.
+     *
+     * @param context The {@link Context} to use for reading/writing the image files
+     *
+     * @see ImageResizeConfig
+     */
     public ImageResizer(Context context) {
         this(context, new ImageResizeConfig());
     }
 
+    /**
+     * Creates scaled copies of the given image according to the settings of this ImageResizer's
+     * {@link ImageResizeConfig} object.
+     *
+     * <p>
+     * A Uri for each resulting scaled image will be passed to {@code callback} once all scaling
+     * operations are complete. A null value will be returned for any scaling sizes that have been
+     * disabled by the resize configuration or that fail during processing.
+     * </p>
+     *
+     * @param sourceUri The {@link Uri} of the image to be resized
+     * @param callback An {@link ImageResizeCallback} that will be called once the scaling is
+     *                 complete
+     */
     public void resizeImage(final Uri sourceUri, final ImageResizeCallback callback) {
         new Thread(new Runnable() {
             @Override
@@ -55,18 +103,69 @@ public class ImageResizer {
         }).start();
     }
 
+    /**
+     * Creates a scaled copy of the given image according to the large output settings in this
+     * ImageResizer's {@link ImageResizeConfig}. Note the copy will be created even if large output
+     * is disabled in the configuration.
+     *
+     * @param sourceUri The {@link Uri} of the image to be resized
+     * @return A {@link Uri} pointing to the scaled image copy, or {@code null} if the operation
+     * failed
+     *
+     * @see ImageResizeConfig#getLargeDimension()
+     * @see ImageResizer#scaleImage(Uri, ImageResizeConfig.Dimension)
+     */
     public Uri createLargeImage(Uri sourceUri) {
         return scaleImage(sourceUri, config.getLargeDimension());
     }
 
+    /**
+     * Creates a scaled copy of the given image according to the medium output settings in this
+     * ImageResizer's {@link ImageResizeConfig}. Note the copy will be created even if medium output
+     * is disabled in the configuration.
+     *
+     * @param sourceUri The {@link Uri} of the image to be resized
+     * @return A {@link Uri} pointing to the scaled image copy, or {@code null} if the operation
+     * failed
+     *
+     * @see ImageResizeConfig#getMediumDimension()
+     * @see ImageResizer#scaleImage(Uri, ImageResizeConfig.Dimension)
+     */
     public Uri createMediumImage(Uri sourceUri) {
         return scaleImage(sourceUri, config.getMediumDimension());
     }
 
+    /**
+     * Creates a scaled copy of the given image according to the small output settings in this
+     * ImageResizer's {@link ImageResizeConfig}. Note the copy will be created even if small output
+     * is disabled in the configuration.
+     *
+     * @param sourceUri The {@link Uri} of the image to be resized
+     * @return A {@link Uri} pointing to the scaled image copy, or {@code null} if the operation
+     * failed
+     *
+     * @see ImageResizeConfig#getSmallDimension()
+     * @see ImageResizer#scaleImage(Uri, ImageResizeConfig.Dimension)
+     */
     public Uri createSmallImage(Uri sourceUri) {
         return scaleImage(sourceUri, config.getSmallDimension());
     }
 
+    /**
+     * Creates a copy of the given image scaled to the size specified by {@code targetDimension}.
+     *
+     * <p>
+     * This transformation maintains the aspect ratio of the source image. If the aspect ratio of
+     * {@code targetDimension} is not equal to the aspect ratio of the source image, the scaled
+     * image will be made as large as possible without exceeding the dimensions of
+     * {@code targetDimension}.
+     * </p>
+     *
+     * @param sourceUri The {@link Uri} of the image to be resized
+     * @param targetDimension The desired dimensions of the copied image
+     * @return A {@link Uri} pointing to the scaled image copy, or {@code null} if the operation
+     * failed
+     */
     public Uri scaleImage(Uri sourceUri, ImageResizeConfig.Dimension targetDimension) {
         Uri dstUri = null;
 
@@ -108,6 +207,20 @@ public class ImageResizer {
         return dstUri;
     }
 
+    /**
+     * Creates a copy of the given bitmap scaled to the size specified by {@code targetDimension}.
+     *
+     * <p>
+     * This transformation maintains the aspect ratio of the source image. If the aspect ratio of
+     * {@code targetDimension} is not equal to the aspect ratio of the source image, the scaled
+     * bitmap will be made as large as possible without exceeding the dimensions of
+     * {@code targetDimension}.
+     * </p>
+     *
+     * @param source The {@link Bitmap} to be resized
+     * @param targetDimension The desired dimensions of the copied bitmap
+     * @return The scaled {@link Bitmap} object
+     */
     public static Bitmap scaleBitmap(Bitmap source, ImageResizeConfig.Dimension targetDimension) {
         float targetRatio = targetDimension.getWidth() / (float) targetDimension.getHeight();
         float srcRatio = source.getWidth() / (float) source.getHeight();
@@ -125,6 +238,11 @@ public class ImageResizer {
         return Bitmap.createScaledBitmap(source, width, height, false);
     }
 
+    /**
+     * Deletes any temporary files that may have been created by previous resize operations. This
+     * will clear temporary files created by <strong>all</strong> ImageResizer instances, not just
+     * the current one.
+     */
     public void clearFiles() {
         for (int i = 0; i < MAX_FILES; i++) {
             String fileName = String.format(Locale.US, FILE_NAME_FORMAT, i);
@@ -133,7 +251,19 @@ public class ImageResizer {
         savedFiles = 0;
     }
 
+    /**
+     * Callback interface for asynchronous resize operations.
+     *
+     * @see ImageResizer#resizeImage(Uri, ImageResizeCallback)
+     */
     public interface ImageResizeCallback {
-        public void onResizeComplete(Uri largeUri, Uri mediumUri, Uri smallUri);
+        /**
+         * This method will be invoked when an asynchronous resize operation is completed.
+         *
+         * @param largeUri A {@link Uri} pointing to the large image copy
+         * @param mediumUri A {@link Uri} pointing to the medium image copy
+         * @param smallUri A {@link Uri} pointing to the small image copy
+         */
+        void onResizeComplete(Uri largeUri, Uri mediumUri, Uri smallUri);
     }
 }
