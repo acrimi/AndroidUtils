@@ -9,7 +9,8 @@ import android.widget.ImageView;
 
 /**
  * An implementation of {@link ArrayAdapter} that is tailored for lists whose rows contain one image
- * icon and one text label. This is useful for common scenarios such as nav drawers.
+ * icon and one text label. This is useful for common scenarios such as nav drawers where a list of
+ * text labels is decorated with unique icons.
  */
 public class TextIconAdapter extends ArrayAdapter<String> {
     private int imageViewId;
