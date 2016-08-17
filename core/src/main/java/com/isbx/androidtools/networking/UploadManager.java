@@ -33,13 +33,8 @@ public class UploadManager {
         }
     };
 
-    public static final SuffixRule SUFFIX_DIMENSIONS = new SuffixRule() {
-        private String[] dimens = {"original", "large", "medium", "small"};
-        @Override
-        public String getSuffix(Uri uri, int index) {
-            return dimens[index % dimens.length];
-        }
-    };
+    public static final SuffixRule SUFFIX_DIMENSIONS =
+        new IndexedSuffixRule(new String[]{"original", "large", "medium", "small"});
 
     private Context context;
     private S3CredentialsProvider credentialsProvider;
@@ -176,6 +171,19 @@ public class UploadManager {
 
 
     public interface SuffixRule {
-        public String getSuffix(Uri uri, int index);
+        String getSuffix(Uri uri, int index);
+    }
+
+    public static class IndexedSuffixRule implements SuffixRule {
+        private String[] suffixes;
+
+        public IndexedSuffixRule(String[] suffixes) {
+            this.suffixes = suffixes;
+        }
+
+        @Override
+        public String getSuffix(Uri uri, int index) {
+            return suffixes[index % suffixes.length];
+        }
     }
 }
