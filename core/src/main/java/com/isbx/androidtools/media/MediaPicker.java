@@ -256,7 +256,7 @@ public class MediaPicker implements ActivityCompat.OnRequestPermissionsResultCal
         InputStream is = null;
         FileOutputStream fos = null;
         try {
-            is = activity.getContentResolver().openInputStream(source);
+            is = getContext().getContentResolver().openInputStream(source);
             if (is != null) {
                 File file = new File(activity.getCacheDir(), CACHE_FILE_NAME);
                 fos = new FileOutputStream(file);
