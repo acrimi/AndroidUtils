@@ -16,6 +16,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.isbx.locationtools.LocationCallback;
 import com.isbx.locationtools.R;
 
 /**
@@ -34,7 +35,7 @@ public class MapComponent implements OnMapReadyCallback, ActivityCompat.OnReques
     private Location initialLocation;
 
     private MyLocationComponent locationComponent;
-    private LocationReadyListener listener;
+    private LocationCallback listener;
 
     public MapComponent(Activity activity) {
         this.activity = activity;
@@ -103,7 +104,7 @@ public class MapComponent implements OnMapReadyCallback, ActivityCompat.OnReques
         return locationComponent;
     }
 
-    public void setListener(LocationReadyListener listener) {
+    public void setListener(LocationCallback listener) {
         this.listener = listener;
     }
 
@@ -120,14 +121,10 @@ public class MapComponent implements OnMapReadyCallback, ActivityCompat.OnReques
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_MAP_ZOOM_LEVEL));
 
                     if (listener != null) {
-                        listener.onLocationReady(initialLocation);
+                        listener.onLocationReceived(initialLocation);
                     }
                 }
             }
         }
-    }
-
-    public interface LocationReadyListener {
-        void onLocationReady(Location location);
     }
 }
