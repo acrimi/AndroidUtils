@@ -20,7 +20,7 @@ android {
 }
 
 dependencies {
-    provided 'com.isbx:android-utils-core:0.0.1'
+    provided 'com.isbx:android-utils-core:0.0.2'
     compile 'com.google.android.gms:play-services-maps:9.4.0'
     compile 'com.google.android.gms:play-services-location:9.4.0'
     compile 'com.google.android.gms:play-services-places:9.4.0'
