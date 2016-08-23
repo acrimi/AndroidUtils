@@ -173,7 +173,14 @@ public class ImageResizer {
 
         Bitmap bm = null;
         try {
-            bm = BitmapFactory.decodeStream(context.getContentResolver().openInputStream(sourceUri));
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(context.getContentResolver().openInputStream(sourceUri), null, options);
+
+            options.inSampleSize = calculateInSampleSize(options, targetDimension.getWidth(), targetDimension.getHeight());
+            options.inJustDecodeBounds = false;
+
+            bm = BitmapFactory.decodeStream(context.getContentResolver().openInputStream(sourceUri), null, options);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -207,6 +214,43 @@ public class ImageResizer {
         }
 
         return dstUri;
+    }
+
+    /**
+     * For a bitmap whose dimensions are represented by {@code options}, calculates the largest
+     * sample size that will result in a sampled bitmap whose dimensions will be equal to or
+     * greater than {@code reqWidth} and {@code reqHeight}.
+     *
+     * <p>See <a href="https://developer.android.com/training/displaying-bitmaps/load-bitmap.html">
+     * https://developer.android.com/training/displaying-bitmaps/load-bitmap.html</a></p>
+     *
+     * @param options A {@link android.graphics.BitmapFactory.Options} object containing the bounds
+     *                of a bitmap
+     * @param reqWidth The desired width of the bitmap to be created using the resulting sample size
+     * @param reqHeight The desired height of the bitmap to be created using the resulting sample
+     *                  size
+     * @return A power-of-2 sample size that will approximately yield the requested dimensions.
+     */
+    public int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) >= reqHeight
+                && (halfWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+        return inSampleSize;
     }
 
     /**
