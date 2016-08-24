@@ -1,11 +1,11 @@
 # AndroidUtils
 
-A utility library for simplifying common tasks in Android development. The library is split between three packages to help reduce
-unnecessary dependencies, with a core module and additional databinding and location modules for more specialized utilities.
+A utility library for simplifying common tasks in Android development. The library is split between three modules to help reduce
+unnecessary dependencies, with a `core` module and additional `databinding` and `location` modules for more specialized utilities.
 
 ## Installation
 
-To start using the library, include the core module in your gradle project:
+To start using the library, include the `core` module in your gradle project:
 
 ```gradle
 repositories {
@@ -17,7 +17,7 @@ dependencies {
 }
 ```
 
-Optionally include the databinding or location modules if necessary:
+Optionally include the `databinding` or `location` modules if necessary:
 
 ```gradle
 dependencies {
