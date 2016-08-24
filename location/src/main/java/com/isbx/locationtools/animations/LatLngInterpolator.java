@@ -1,8 +1,7 @@
 package com.isbx.locationtools.animations;
 
 /* Copyright 2013 Google Inc.
-   Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0.html
-   https://gist.github.com/broady/6314689*/
+   Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0.html */
 
 
 import com.google.android.gms.maps.model.LatLng;
@@ -16,10 +15,31 @@ import static java.lang.Math.sqrt;
 import static java.lang.Math.toDegrees;
 import static java.lang.Math.toRadians;
 
+/**
+ * A utility interface to interpolate between two {@link LatLng} values. Implementations taken from
+ * <a href="https://gist.github.com/broady/6314689">https://gist.github.com/broady/6314689</a>
+ */
 public interface LatLngInterpolator {
-    public LatLng interpolate(float fraction, LatLng a, LatLng b);
+    /**
+     * Calculates the distance between two coordinates, and returns a {@link LatLng} that lies at
+     * {@code fraction} of that distance.
+     *
+     * @param fraction The fraction of the distance to find between {@code a} and {@code b}
+     * @param a The first {@link LatLng} to interpolate between
+     * @param b The second {@link LatLng} to interpolate between
+     * @return The interpolated {@link LatLng} between {@code a} and {@code b}
+     */
+    LatLng interpolate(float fraction, LatLng a, LatLng b);
 
-    public class Linear implements LatLngInterpolator {
+    /**
+     * An implementation of {@link LatLngInterpolator} that linearly interpolates between two
+     * {@link LatLng} coordinate sets. This does not take into account the curvature of the earth
+     * or the fact that longitude values wrap from 180 to 0. In other words, an interpolation
+     * between a longitude of 0 and a longitude of 180 will result in a longitude of 90.
+     *
+     * @see LinearFixed
+     */
+    class Linear implements LatLngInterpolator {
         @Override
         public LatLng interpolate(float fraction, LatLng a, LatLng b) {
             double lat = (b.latitude - a.latitude) * fraction + a.latitude;
@@ -28,7 +48,17 @@ public interface LatLngInterpolator {
         }
     }
 
-    public class LinearFixed implements LatLngInterpolator {
+    /**
+     * An implementation of {@link LatLngInterpolator} that linearly interpolates between two
+     * {@link LatLng} coordinate sets. Unlike, {@link Linear}, this implementation takes into
+     * account the circular nature of longitude coordinates and will find the shortest path across
+     * the 180th meridian. In other words, an interpolation between a longitude of 0 and a longitude
+     * of 180 will result in the correct longitude of 0/180. This does not take into account the
+     * curvature of the earth.
+     *
+     * @see Linear
+     */
+    class LinearFixed implements LatLngInterpolator {
         @Override
         public LatLng interpolate(float fraction, LatLng a, LatLng b) {
             double lat = (b.latitude - a.latitude) * fraction + a.latitude;
@@ -43,7 +73,12 @@ public interface LatLngInterpolator {
         }
     }
 
-    public class Spherical implements LatLngInterpolator {
+    /**
+     * An implementation of {@link LatLngInterpolator} that interpolates between two {@link LatLng}
+     * coordinate sets while accounting for the spherical shape of the earth. This will provide
+     * more accurate results than {@link Linear} or {@link LinearFixed}.
+     */
+    class Spherical implements LatLngInterpolator {
 
         /* From github.com/googlemaps/android-maps-utils */
         @Override
