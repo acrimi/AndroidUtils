@@ -1,0 +1,11 @@
+com.isbx.androidtools.media
+com.isbx.androidtools.networking
+com.isbx.androidtools.networking.s3
+com.isbx.androidtools.ui
+com.isbx.androidtools.ui.dialogs
+com.isbx.androidtools.utils
+com.isbx.databinding
+com.isbx.databinding.ui
+com.isbx.locationtools
+com.isbx.locationtools.animations
+com.isbx.locationtools.components
