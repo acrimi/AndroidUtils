@@ -70,7 +70,13 @@ public class MarkerAnimation extends Animation {
         if (startPosition != endPosition) {
             marker.setPosition(latLngInterpolator.interpolate(interpolatedTime, startPosition, endPosition));
         }
-        marker.setRotation(startRotation + (endRotation - startRotation)*interpolatedTime);
+
+        // Animate along shortest arc
+        float delta = endRotation - startRotation;
+        if (Math.abs(delta) > 180) {
+            delta -= Math.signum(delta) * 360;
+        }
+        marker.setRotation(startRotation + delta*interpolatedTime);
     }
 
     /**
