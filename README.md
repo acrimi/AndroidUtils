@@ -21,7 +21,7 @@ Optionally include the `databinding` or `location` modules if necessary:
 
 ```gradle
 dependencies {
-  compile 'com.isbx:android-utils-location:0.0.2'
+  compile 'com.isbx:android-utils-location:0.0.3'
   compile 'com.isbx:android-utils-databinding:0.0.2'
 }
 ```
