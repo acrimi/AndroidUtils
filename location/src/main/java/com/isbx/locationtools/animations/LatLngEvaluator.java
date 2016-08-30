@@ -4,6 +4,8 @@ package com.isbx.locationtools.animations;
    Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0.html */
 
 
+import android.animation.TypeEvaluator;
+
 import com.google.android.gms.maps.model.LatLng;
 
 import static java.lang.Math.asin;
@@ -16,10 +18,10 @@ import static java.lang.Math.toDegrees;
 import static java.lang.Math.toRadians;
 
 /**
- * A utility interface to interpolate between two {@link LatLng} values. Implementations taken from
- * <a href="https://gist.github.com/broady/6314689">https://gist.github.com/broady/6314689</a>
+ * A {@link TypeEvaluator} to interpolate between two {@link LatLng} values. Implementations taken
+ * from <a href="https://gist.github.com/broady/6314689">https://gist.github.com/broady/6314689</a>
  */
-public interface LatLngInterpolator {
+public interface LatLngEvaluator extends TypeEvaluator<LatLng> {
     /**
      * Calculates the distance between two coordinates, and returns a {@link LatLng} that lies at
      * {@code fraction} of that distance.
@@ -29,19 +31,19 @@ public interface LatLngInterpolator {
      * @param b The second {@link LatLng} to interpolate between
      * @return The interpolated {@link LatLng} between {@code a} and {@code b}
      */
-    LatLng interpolate(float fraction, LatLng a, LatLng b);
+    LatLng evaluate(float fraction, LatLng a, LatLng b);
 
     /**
-     * An implementation of {@link LatLngInterpolator} that linearly interpolates between two
+     * An implementation of {@link LatLngEvaluator} that linearly interpolates between two
      * {@link LatLng} coordinate sets. This does not take into account the curvature of the earth
      * or the fact that longitude values wrap from 180 to 0. In other words, an interpolation
      * between a longitude of 0 and a longitude of 180 will result in a longitude of 90.
      *
      * @see LinearFixed
      */
-    class Linear implements LatLngInterpolator {
+    class Linear implements LatLngEvaluator {
         @Override
-        public LatLng interpolate(float fraction, LatLng a, LatLng b) {
+        public LatLng evaluate(float fraction, LatLng a, LatLng b) {
             double lat = (b.latitude - a.latitude) * fraction + a.latitude;
             double lng = (b.longitude - a.longitude) * fraction + a.longitude;
             return new LatLng(lat, lng);
@@ -49,7 +51,7 @@ public interface LatLngInterpolator {
     }
 
     /**
-     * An implementation of {@link LatLngInterpolator} that linearly interpolates between two
+     * An implementation of {@link LatLngEvaluator} that linearly interpolates between two
      * {@link LatLng} coordinate sets. Unlike, {@link Linear}, this implementation takes into
      * account the circular nature of longitude coordinates and will find the shortest path across
      * the 180th meridian. In other words, an interpolation between a longitude of 0 and a longitude
@@ -58,9 +60,9 @@ public interface LatLngInterpolator {
      *
      * @see Linear
      */
-    class LinearFixed implements LatLngInterpolator {
+    class LinearFixed implements LatLngEvaluator {
         @Override
-        public LatLng interpolate(float fraction, LatLng a, LatLng b) {
+        public LatLng evaluate(float fraction, LatLng a, LatLng b) {
             double lat = (b.latitude - a.latitude) * fraction + a.latitude;
             double lngDelta = b.longitude - a.longitude;
 
@@ -74,15 +76,18 @@ public interface LatLngInterpolator {
     }
 
     /**
-     * An implementation of {@link LatLngInterpolator} that interpolates between two {@link LatLng}
+     * An implementation of {@link LatLngEvaluator} that interpolates between two {@link LatLng}
      * coordinate sets while accounting for the spherical shape of the earth. This will provide
      * more accurate results than {@link Linear} or {@link LinearFixed}.
      */
-    class Spherical implements LatLngInterpolator {
+    class Spherical implements LatLngEvaluator {
 
         /* From github.com/googlemaps/android-maps-utils */
         @Override
-        public LatLng interpolate(float fraction, LatLng from, LatLng to) {
+        public LatLng evaluate(float fraction, LatLng from, LatLng to) {
+            if (from.equals(to)) {
+                return from;
+            }
             // http://en.wikipedia.org/wiki/Slerp
             double fromLat = toRadians(from.latitude);
             double fromLng = toRadians(from.longitude);
