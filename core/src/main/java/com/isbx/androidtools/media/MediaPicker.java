@@ -258,7 +258,7 @@ public class MediaPicker implements ActivityCompat.OnRequestPermissionsResultCal
         try {
             is = getContext().getContentResolver().openInputStream(source);
             if (is != null) {
-                File file = new File(activity.getCacheDir(), CACHE_FILE_NAME);
+                File file = new File(getContext().getCacheDir(), CACHE_FILE_NAME);
                 fos = new FileOutputStream(file);
 
                 byte[] bytes = new byte[2048];
@@ -315,7 +315,7 @@ public class MediaPicker implements ActivityCompat.OnRequestPermissionsResultCal
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_CAMERA_PERMISSION) {
             if (cameraPermissionPending || videoPermissionPending) {
-                if (ContextCompat.checkSelfPermission(activity, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                     if (cameraPermissionPending) {
                         cameraPermissionPending = false;
                         launchCameraIntent();
@@ -324,7 +324,7 @@ public class MediaPicker implements ActivityCompat.OnRequestPermissionsResultCal
                         launchVideoIntent();
                     }
                 } else {
-                    new AlertDialog.Builder(activity)
+                    new AlertDialog.Builder(getContext())
                         .setTitle(R.string.permission_denied)
                         .setMessage(R.string.camera_permission_msg)
                         .setPositiveButton(R.string.dialog_button_ok, null)
@@ -459,11 +459,16 @@ public class MediaPicker implements ActivityCompat.OnRequestPermissionsResultCal
             // the image capture intent will throw a security exception, so we need to make sure it's granted
             // Apps targeting Marhsmallow with CAMERA permission should pass onRequestPermissionResult()
             // through to MediaPicker
-            if (ContextCompat.checkSelfPermission(activity, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                 launchCameraIntent();
             } else {
                 cameraPermissionPending = true;
-                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
+                String[] permissions = new String[]{Manifest.permission.CAMERA};
+                if (fragment != null) {
+                    fragment.requestPermissions(permissions, REQUEST_CAMERA_PERMISSION);
+                } else {
+                    ActivityCompat.requestPermissions(activity, permissions, REQUEST_CAMERA_PERMISSION);
+                }
             }
         } else {
             launchCameraIntent();
@@ -500,11 +505,16 @@ public class MediaPicker implements ActivityCompat.OnRequestPermissionsResultCal
             // the image capture intent will throw a security exception, so we need to make sure it's granted
             // Apps targeting Marhsmallow with CAMERA permission should pass onRequestPermissionResult()
             // through to MediaPicker
-            if (ContextCompat.checkSelfPermission(activity, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                 launchVideoIntent();
             } else {
                 videoPermissionPending = true;
-                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
+                String[] permissions = new String[]{Manifest.permission.CAMERA};
+                if (fragment != null) {
+                    fragment.requestPermissions(permissions, REQUEST_CAMERA_PERMISSION);
+                } else {
+                    ActivityCompat.requestPermissions(activity, permissions, REQUEST_CAMERA_PERMISSION);
+                }
             }
         } else {
             launchVideoIntent();
@@ -535,9 +545,9 @@ public class MediaPicker implements ActivityCompat.OnRequestPermissionsResultCal
      * @return {@code true} if the manifest declares the permission, {@code false} otherwise
      */
     private boolean hasCameraPermissionInManifest() {
-        final String packageName = activity.getPackageName();
+        final String packageName = getContext().getPackageName();
         try {
-            final PackageInfo packageInfo = activity.getPackageManager()
+            final PackageInfo packageInfo = getContext().getPackageManager()
                 .getPackageInfo(packageName, PackageManager.GET_PERMISSIONS);
             final String[] declaredPermissions = packageInfo.requestedPermissions;
             if (declaredPermissions != null && declaredPermissions.length > 0) {
