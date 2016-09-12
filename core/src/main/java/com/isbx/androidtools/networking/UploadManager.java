@@ -3,6 +3,8 @@ package com.isbx.androidtools.networking;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
 
 import com.isbx.androidtools.networking.s3.S3Credentials;
 import com.isbx.androidtools.networking.s3.S3CredentialsProvider;
@@ -179,9 +181,7 @@ public class UploadManager {
         protected String[] doInBackground(Uri... uris) {
             S3Credentials credentials = credentialsProvider.getCredentials();
             if (credentials == null) {
-                if (listener != null) {
-                    listener.onUploadFailed(new IOException("Failed retrieving S3 credentials from provider"), 0);
-                }
+                publishFailure(new IOException("Failed retrieving S3 credentials from provider"), 0);
                 cancel(true);
                 return null;
             }
@@ -199,9 +199,7 @@ public class UploadManager {
                     in = context.getContentResolver().openInputStream(uri);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
-                    if (listener != null) {
-                        listener.onUploadFailed(e, i);
-                    }
+                    publishFailure(e, i);
                     cancel(true);
                     break;
                 }
@@ -226,15 +224,13 @@ public class UploadManager {
                         @Override
                         public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                             result[index] = url + "/" + key;
-                            onProgressUpdate((int) (index /(float) result.length * 100));
+                            publishProgress((int) (index /(float) result.length * 100));
                         }
 
                         @Override
                         public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                             error.printStackTrace();
-                            if (listener != null) {
-                                listener.onUploadFailed(error, index);
-                            }
+                            publishFailure(error, index);
                             cancel(true);
                         }
                     });
@@ -242,6 +238,17 @@ public class UploadManager {
             }
 
             return result;
+        }
+
+        private void publishFailure(final Throwable error, final int fileIndex) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    if (listener != null) {
+                        listener.onUploadFailed(error, fileIndex);
+                    }
+                }
+            });
         }
 
         @Override
