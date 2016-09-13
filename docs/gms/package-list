@@ -1,0 +1,7 @@
+com.google.android.gms.common
+com.google.android.gms.common.api
+com.google.android.gms.common.data
+com.google.android.gms.location
+com.google.android.gms.location.places
+com.google.android.gms.maps
+com.google.android.gms.maps.model
