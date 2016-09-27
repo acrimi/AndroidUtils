@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-  compile 'com.isbx:android-utils-core:0.0.2'
+  compile 'com.isbx:android-utils-core:0.0.5'
 }
 ```
 
