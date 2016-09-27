@@ -187,7 +187,10 @@ public class ImageResizer {
 
         if (bm != null) {
             Bitmap out = scaleBitmap(bm, targetDimension);
-            bm.recycle();
+            if (bm != out) {
+                // output maybe the same bitmap if scaling wasn't needed, otherwise we can recycle it
+                bm.recycle();
+            }
 
             OutputStream os = null;
             try {
