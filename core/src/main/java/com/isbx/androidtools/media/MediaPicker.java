@@ -259,7 +259,7 @@ public class MediaPicker implements ActivityCompat.OnRequestPermissionsResultCal
         try {
             is = getContext().getContentResolver().openInputStream(source);
             if (is != null) {
-                File file = new File(getContext().getCacheDir(), CACHE_FILE_NAME);
+                File file = new File(getContext().getCacheDir(), CACHE_FILE_NAME+System.currentTimeMillis());
                 fos = new FileOutputStream(file);
 
                 byte[] bytes = new byte[2048];
@@ -269,8 +269,6 @@ public class MediaPicker implements ActivityCompat.OnRequestPermissionsResultCal
                 }
 
                 source = Uri.fromFile(file);
-                // Append query param to prevent caching errors with certain image loading libraries
-                source = source.buildUpon().appendQueryParameter("t", ""+System.currentTimeMillis()).build();
             }
         } catch (IOException e) {
             e.printStackTrace();
