@@ -17,6 +17,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 
 import com.isbx.androidtools.R;
@@ -607,7 +608,7 @@ public class MediaPicker implements ActivityCompat.OnRequestPermissionsResultCal
         File image = new File(storageDir, filename + ".jpg");
 
         // Save a file: path for use with ACTION_VIEW intents
-        return Uri.fromFile(image);
+        return FileProvider.getUriForFile(context, "com.isbx.androidtools.fileprovider", image);
     }
 
 
