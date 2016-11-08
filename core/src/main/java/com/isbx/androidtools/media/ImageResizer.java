@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 
+import com.android.mms.exif.ExifInterface;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -199,9 +201,13 @@ public class ImageResizer {
                 }
                 String fileName = String.format(Locale.US, FILE_NAME_FORMAT, savedFiles++);
                 os = context.openFileOutput(fileName, Context.MODE_PRIVATE);
-                out.compress(Bitmap.CompressFormat.JPEG, 100, os);
+
+                ExifInterface exif = new ExifInterface();
+                exif.readExif(context.getContentResolver().openInputStream(sourceUri));
+                exif.writeExif(out, os);
+
                 dstUri = Uri.fromFile(context.getFileStreamPath(fileName));
-            } catch (FileNotFoundException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             } finally {
                 if (os != null) {
