@@ -194,6 +194,12 @@ public class UploadManager {
                 }
 
                 Uri uri = uris[i];
+                if (uri == null) {
+                    publishFailure(new IllegalArgumentException("Uri cannot be null"), i);
+                    cancel(true);
+                    break;
+                }
+
                 InputStream in = null;
                 try {
                     in = context.getContentResolver().openInputStream(uri);
