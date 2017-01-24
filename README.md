@@ -10,6 +10,7 @@ To start using the library, include the `core` module in your gradle project:
 ```gradle
 repositories {
   maven { url 'https://github.com/acrimi/AndroidUtils/raw/master/archives/' }
+  maven { url 'https://jitpack.io' }
 }
 
 dependencies {
