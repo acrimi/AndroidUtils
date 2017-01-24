@@ -14,9 +14,16 @@ repositories {
 }
 
 dependencies {
-  compile 'com.isbx:android-utils-core:0.0.5'
+  compile 'com.isbx:android-utils-core:0.0.8'
 }
 ```
+
+And in your AndroidManifest, declare your File Provider.
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="${applicationId}.androidtools.fileprovider"
+            tools:replace="android:authorities" />
 
 Optionally include the `databinding` or `location` modules if necessary:
 
