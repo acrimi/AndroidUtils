@@ -20,10 +20,10 @@ dependencies {
 
 And in your AndroidManifest, declare your File Provider.
 
-        <provider
-            android:name="android.support.v4.content.FileProvider"
-            android:authorities="${applicationId}.androidtools.fileprovider"
-            tools:replace="android:authorities" />
+    <provider
+        android:name="android.support.v4.content.FileProvider"
+        android:authorities="${applicationId}.androidtools.fileprovider"
+        tools:replace="android:authorities" />
 
 Optionally include the `databinding` or `location` modules if necessary:
 
