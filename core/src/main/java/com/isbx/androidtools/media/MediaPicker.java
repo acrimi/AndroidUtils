@@ -606,7 +606,7 @@ public class MediaPicker implements ActivityCompat.OnRequestPermissionsResultCal
         File image = new File(storageDir, filename + ".jpg");
 
         // Save a file: path for use with ACTION_VIEW intents
-        return FileProvider.getUriForFile(context, "com.isbx.androidtools.fileprovider", image);
+        return FileProvider.getUriForFile(context, context.getPackageName() + ".androidtools.fileprovider", image);
     }
 
 
