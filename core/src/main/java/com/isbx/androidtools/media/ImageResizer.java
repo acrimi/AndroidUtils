@@ -6,29 +6,37 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 
 import com.android.mms.exif.ExifInterface;
+import com.android.mms.exif.ExifTag;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
+
+import static com.android.mms.exif.ExifInterface.TAG_ORIENTATION;
 
 /**
  * A convenience class to resize an image to a new resolution while maintaining aspect ratio. Can be
  * configured to output up to three different target resolutions via an {@link ImageResizeConfig}
  * object.
- *
+ * <p>
  * <p>
  * The resized images are saved as temporary files to the app's internal private storage. The
  * persistence of these files is not guaranteed, and they may be overwritten at any time by any of
  * the following actions:
  * </p>
- *
+ * <p>
  * <ul>
  * <li>The ImageResizer is used to process several different images consecutively</li>
  * <li>Another ImageResizer is used to process an image</li>
  * <li>An explicit call to {@link ImageResizer#clearFiles()} is made</li>
  * </ul>
- *
+ * <p>
  * <p>
  * For this reason, it is recommended to take whatever action is needed on the resized files
  * immediately after the scaling operation is completed, or copy them to a persistent location if
@@ -49,9 +57,8 @@ public class ImageResizer {
      * Creates a new ImageResizer that will use the given config to scale images.
      *
      * @param context The {@link Context} to use for reading/writing the image files
-     * @param config A {@link ImageResizeConfig} object specifying how this ImageResizer should
-     *               process images
-     *
+     * @param config  A {@link ImageResizeConfig} object specifying how this ImageResizer should
+     *                process images
      * @see ImageResizeConfig
      */
     public ImageResizer(Context context, ImageResizeConfig config) {
@@ -63,7 +70,6 @@ public class ImageResizer {
      * Creates a new ImageResizer with a default {@link ImageResizeConfig}.
      *
      * @param context The {@link Context} to use for reading/writing the image files
-     *
      * @see ImageResizeConfig
      */
     public ImageResizer(Context context) {
@@ -73,7 +79,7 @@ public class ImageResizer {
     /**
      * Creates scaled copies of the given image according to the settings of this ImageResizer's
      * {@link ImageResizeConfig} object.
-     *
+     * <p>
      * <p>
      * A Uri for each resulting scaled image will be passed to {@code callback} once all scaling
      * operations are complete. A null value will be returned for any scaling sizes that have been
@@ -81,8 +87,8 @@ public class ImageResizer {
      * </p>
      *
      * @param sourceUri The {@link Uri} of the image to be resized
-     * @param callback An {@link ImageResizeCallback} that will be called once the scaling is
-     *                 complete
+     * @param callback  An {@link ImageResizeCallback} that will be called once the scaling is
+     *                  complete
      */
     public void resizeImage(final Uri sourceUri, final ImageResizeCallback callback) {
         new Thread(new Runnable() {
@@ -115,7 +121,6 @@ public class ImageResizer {
      * @param sourceUri The {@link Uri} of the image to be resized
      * @return A {@link Uri} pointing to the scaled image copy, or {@code null} if the operation
      * failed
-     *
      * @see ImageResizeConfig#getLargeDimension()
      * @see ImageResizer#scaleImage(Uri, ImageResizeConfig.Dimension)
      */
@@ -131,7 +136,6 @@ public class ImageResizer {
      * @param sourceUri The {@link Uri} of the image to be resized
      * @return A {@link Uri} pointing to the scaled image copy, or {@code null} if the operation
      * failed
-     *
      * @see ImageResizeConfig#getMediumDimension()
      * @see ImageResizer#scaleImage(Uri, ImageResizeConfig.Dimension)
      */
@@ -147,7 +151,6 @@ public class ImageResizer {
      * @param sourceUri The {@link Uri} of the image to be resized
      * @return A {@link Uri} pointing to the scaled image copy, or {@code null} if the operation
      * failed
-     *
      * @see ImageResizeConfig#getSmallDimension()
      * @see ImageResizer#scaleImage(Uri, ImageResizeConfig.Dimension)
      */
@@ -157,7 +160,7 @@ public class ImageResizer {
 
     /**
      * Creates a copy of the given image scaled to the size specified by {@code targetDimension}.
-     *
+     * <p>
      * <p>
      * This transformation maintains the aspect ratio of the source image. If the aspect ratio of
      * {@code targetDimension} is not equal to the aspect ratio of the source image, the scaled
@@ -165,11 +168,13 @@ public class ImageResizer {
      * {@code targetDimension}.
      * </p>
      *
-     * @param sourceUri The {@link Uri} of the image to be resized
+     * @param sourceUri       The {@link Uri} of the image to be resized
      * @param targetDimension The desired dimensions of the copied image
      * @return A {@link Uri} pointing to the scaled image copy, or {@code null} if the operation
      * failed
      */
+
+
     public Uri scaleImage(Uri sourceUri, ImageResizeConfig.Dimension targetDimension) {
         Uri dstUri = null;
 
@@ -204,8 +209,13 @@ public class ImageResizer {
 
                 ExifInterface exif = new ExifInterface();
                 exif.readExif(context.getContentResolver().openInputStream(sourceUri));
-                exif.writeExif(out, os);
-
+                if (exif.getAllTags() != null) {
+                    exif.writeExif(out, os);
+                } else {
+                    ExifInterface exif2 = new ExifInterface();
+                    exif2.addDateTimeStampTag(exif.TAG_DATE_TIME_ORIGINAL, Calendar.getInstance().getTime().getTime(), TimeZone.getDefault());
+                    exif2.writeExif(out, os);
+                }
                 dstUri = Uri.fromFile(context.getFileStreamPath(fileName));
             } catch (IOException e) {
                 e.printStackTrace();
@@ -229,13 +239,13 @@ public class ImageResizer {
      * For a bitmap whose dimensions are represented by {@code options}, calculates the largest
      * sample size that will result in a sampled bitmap whose dimensions will be equal to or
      * greater than {@code reqWidth} and {@code reqHeight}.
-     *
+     * <p>
      * <p>See <a href="https://developer.android.com/training/displaying-bitmaps/load-bitmap.html">
      * https://developer.android.com/training/displaying-bitmaps/load-bitmap.html</a></p>
      *
-     * @param options A {@link android.graphics.BitmapFactory.Options} object containing the bounds
-     *                of a bitmap
-     * @param reqWidth The desired width of the bitmap to be created using the resulting sample size
+     * @param options   A {@link android.graphics.BitmapFactory.Options} object containing the bounds
+     *                  of a bitmap
+     * @param reqWidth  The desired width of the bitmap to be created using the resulting sample size
      * @param reqHeight The desired height of the bitmap to be created using the resulting sample
      *                  size
      * @return A power-of-2 sample size that will approximately yield the requested dimensions.
@@ -254,7 +264,7 @@ public class ImageResizer {
             // Calculate the largest inSampleSize value that is a power of 2 and keeps both
             // height and width larger than the requested height and width.
             while ((halfHeight / inSampleSize) >= reqHeight
-                && (halfWidth / inSampleSize) >= reqWidth) {
+                    && (halfWidth / inSampleSize) >= reqWidth) {
                 inSampleSize *= 2;
             }
         }
@@ -264,7 +274,7 @@ public class ImageResizer {
 
     /**
      * Creates a copy of the given bitmap scaled to the size specified by {@code targetDimension}.
-     *
+     * <p>
      * <p>
      * This transformation maintains the aspect ratio of the source image. If the aspect ratio of
      * {@code targetDimension} is not equal to the aspect ratio of the source image, the scaled
@@ -272,7 +282,7 @@ public class ImageResizer {
      * {@code targetDimension}.
      * </p>
      *
-     * @param source The {@link Bitmap} to be resized
+     * @param source          The {@link Bitmap} to be resized
      * @param targetDimension The desired dimensions of the copied bitmap
      * @return The scaled {@link Bitmap} object
      */
@@ -315,9 +325,9 @@ public class ImageResizer {
         /**
          * This method will be invoked when an asynchronous resize operation is completed.
          *
-         * @param largeUri A {@link Uri} pointing to the large image copy
+         * @param largeUri  A {@link Uri} pointing to the large image copy
          * @param mediumUri A {@link Uri} pointing to the medium image copy
-         * @param smallUri A {@link Uri} pointing to the small image copy
+         * @param smallUri  A {@link Uri} pointing to the small image copy
          */
         void onResizeComplete(Uri largeUri, Uri mediumUri, Uri smallUri);
     }
