@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-  compile 'com.isbx:android-utils-core:0.0.8'
+  compile 'com.isbx:android-utils-core:0.0.9'
 }
 ```
 
