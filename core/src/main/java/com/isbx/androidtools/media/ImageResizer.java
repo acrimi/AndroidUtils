@@ -10,7 +10,9 @@ import com.android.mms.exif.ExifInterface;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Calendar;
 import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * A convenience class to resize an image to a new resolution while maintaining aspect ratio. Can be
@@ -204,7 +206,14 @@ public class ImageResizer {
 
                 ExifInterface exif = new ExifInterface();
                 exif.readExif(context.getContentResolver().openInputStream(sourceUri));
-                exif.writeExif(out, os);
+
+                if (exif.getAllTags() != null) {
+                    exif.writeExif(out, os);
+                } else {
+                    ExifInterface exif2 = new ExifInterface();
+                    exif2.addDateTimeStampTag(ExifInterface.TAG_DATE_TIME_ORIGINAL, Calendar.getInstance().getTime().getTime(), TimeZone.getDefault());
+                    exif2.writeExif(out, os);
+                }
 
                 dstUri = Uri.fromFile(context.getFileStreamPath(fileName));
             } catch (IOException e) {
