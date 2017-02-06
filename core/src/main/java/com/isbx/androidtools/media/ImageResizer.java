@@ -211,7 +211,7 @@ public class ImageResizer {
                     exif.writeExif(out, os);
                 } else {
                     ExifInterface exif2 = new ExifInterface();
-                    exif2.addDateTimeStampTag(exif.TAG_DATE_TIME_ORIGINAL, Calendar.getInstance().getTime().getTime(), TimeZone.getDefault());
+                    exif2.addDateTimeStampTag(ExifInterface.TAG_DATE_TIME_ORIGINAL, Calendar.getInstance().getTime().getTime(), TimeZone.getDefault());
                     exif2.writeExif(out, os);
                 }
 
