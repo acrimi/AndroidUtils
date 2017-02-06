@@ -204,7 +204,14 @@ public class ImageResizer {
 
                 ExifInterface exif = new ExifInterface();
                 exif.readExif(context.getContentResolver().openInputStream(sourceUri));
-                exif.writeExif(out, os);
+
+                if (exif.getAllTags() != null) {
+                    exif.writeExif(out, os);
+                } else {
+                    ExifInterface exif2 = new ExifInterface();
+                    exif2.addDateTimeStampTag(exif.TAG_DATE_TIME_ORIGINAL, Calendar.getInstance().getTime().getTime(), TimeZone.getDefault());
+                    exif2.writeExif(out, os);
+                }
 
                 dstUri = Uri.fromFile(context.getFileStreamPath(fileName));
             } catch (IOException e) {
