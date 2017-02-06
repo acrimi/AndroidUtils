@@ -10,7 +10,9 @@ import com.android.mms.exif.ExifInterface;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Calendar;
 import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * A convenience class to resize an image to a new resolution while maintaining aspect ratio. Can be
