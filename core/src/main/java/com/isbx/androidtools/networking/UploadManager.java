@@ -111,7 +111,7 @@ public class UploadManager {
 
     /**
      * Uploads an array of images to S3 in the background in series using the given
-     * {@link SuffixRule} to configure the uploaded S3 keys.
+     * {@link SuffixRule} to configure the uploaded S3 keys with the ACL parameter (private/public).
      *
      * @param imageUris An array {@link Uri}s representing the images to be uploaded
      * @param suffixRule A {@link SuffixRule} that will be used to configure the uploaded S3 key for
@@ -152,6 +152,24 @@ public class UploadManager {
     public void uploadImage(Uri imageUri, SuffixRule suffixRule, UploadListener listener) {
         ImageUploadTask uploadTask = new ImageUploadTask(context, credentialsProvider, listener);
         uploadTask.suffixRule = suffixRule;
+        uploadTask.execute(imageUri);
+    }
+
+    /**
+     * Uploads an image to S3 in the background using the given {@link SuffixRule} to configure the
+     * uploaded S3 key with the ACL parameter (private/public)
+     *
+     * @param imageUri A {@link Uri} representing the image to be uploaded
+     * @param suffixRule A {@link SuffixRule} that will be used to configure the uploaded S3 key for
+     *                   this file
+     * @param acl A string {@link String}s representing the ACL
+     * @param listener An {@link UploadListener} that will be notified of upload completion, error,
+     *                 and progress events
+     */
+    public void uploadImage(Uri imageUri, SuffixRule suffixRule, String acl, UploadListener listener) {
+        ImageUploadTask uploadTask = new ImageUploadTask(context, credentialsProvider, listener);
+        uploadTask.suffixRule = suffixRule;
+        uploadTask.acl = acl;
         uploadTask.execute(imageUri);
     }
 
