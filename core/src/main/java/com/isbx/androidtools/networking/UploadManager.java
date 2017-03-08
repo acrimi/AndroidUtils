@@ -110,6 +110,24 @@ public class UploadManager {
     }
 
     /**
+     * Uploads an array of images to S3 in the background in series using the given
+     * {@link SuffixRule} to configure the uploaded S3 keys.
+     *
+     * @param imageUris An array {@link Uri}s representing the images to be uploaded
+     * @param suffixRule A {@link SuffixRule} that will be used to configure the uploaded S3 key for
+     *                   each file
+     * @param acl A string {@link String}s representing the ACL
+     * @param listener An {@link UploadListener} that will be notified of upload completion, error,
+     *                 and progress events
+     */
+    public void uploadImages(Uri[] imageUris, SuffixRule suffixRule, String acl, UploadListener listener) {
+        ImageUploadTask uploadTask = new ImageUploadTask(context, credentialsProvider, listener);
+        uploadTask.suffixRule = suffixRule;
+        uploadTask.acl = acl;
+        uploadTask.execute(imageUris);
+    }
+
+    /**
      * Uploads an image to S3 in the background.
      *
      * @param imageUri A {@link Uri} representing the image to be uploaded
@@ -160,6 +178,7 @@ public class UploadManager {
         private S3CredentialsProvider credentialsProvider;
         private UploadListener listener;
         private SuffixRule suffixRule = SUFFIX_INCREMENTAL;
+        private String acl = DEFAULT_ACL;
 
         /**
          * Creates a new ImageUploadTask instance. The instance will use {@code credentialsProvider}
@@ -221,7 +240,7 @@ public class UploadManager {
                     params.put("policy", credentials.getPolicy());
                     params.put("signature", credentials.getSignature());
                     params.put("success_action_status", DEFAULT_SUCCESS_STATUS);
-                    params.put("acl", DEFAULT_ACL);
+                    params.put("acl", acl);
                     params.put("file", in);
 
                     final int index = i;
