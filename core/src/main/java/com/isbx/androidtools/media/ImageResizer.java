@@ -7,8 +7,12 @@ import android.net.Uri;
 
 import com.android.mms.exif.ExifInterface;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Locale;
@@ -172,19 +176,38 @@ public class ImageResizer {
      * @return A {@link Uri} pointing to the scaled image copy, or {@code null} if the operation
      * failed
      */
+
+    public boolean imageIsJPEG(Uri imageUri) throws Exception {
+        DataInputStream ins = new DataInputStream(new BufferedInputStream(context.getContentResolver().openInputStream(imageUri)));
+        try {
+            if (ins.readShort() == 0xffd8) {
+                return true;
+            } else {
+                return false;
+
+            }
+        } finally {
+            ins.close();
+        }
+    };
+
+
     public Uri scaleImage(Uri sourceUri, ImageResizeConfig.Dimension targetDimension) {
         Uri dstUri = null;
 
         Bitmap bm = null;
         try {
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inJustDecodeBounds = true;
-            BitmapFactory.decodeStream(context.getContentResolver().openInputStream(sourceUri), null, options);
 
-            options.inSampleSize = calculateInSampleSize(options, targetDimension.getWidth(), targetDimension.getHeight());
-            options.inJustDecodeBounds = false;
 
-            bm = BitmapFactory.decodeStream(context.getContentResolver().openInputStream(sourceUri), null, options);
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inJustDecodeBounds = true;
+                BitmapFactory.decodeStream(context.getContentResolver().openInputStream(sourceUri), null, options);
+
+                options.inSampleSize = calculateInSampleSize(options, targetDimension.getWidth(), targetDimension.getHeight());
+                options.inJustDecodeBounds = false;
+
+                bm = BitmapFactory.decodeStream(context.getContentResolver().openInputStream(sourceUri), null, options);
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -205,7 +228,22 @@ public class ImageResizer {
                 os = context.openFileOutput(fileName, Context.MODE_PRIVATE);
 
                 ExifInterface exif = new ExifInterface();
-                exif.readExif(context.getContentResolver().openInputStream(sourceUri));
+
+                boolean isJpeg = false;
+                try {
+                    isJpeg = imageIsJPEG(sourceUri);
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+                if (isJpeg) {
+                    exif.readExif(context.getContentResolver().openInputStream(sourceUri));
+                } else {
+                    //force bitmap as JPG before reading exif
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    out.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                    byte[] byteArray = stream.toByteArray();
+                    out = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+                }
 
                 if (exif.getAllTags() != null) {
                     exif.writeExif(out, os);
