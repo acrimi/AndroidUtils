@@ -184,7 +184,6 @@ public class ImageResizer {
                 return true;
             } else {
                 return false;
-
             }
         } finally {
             ins.close();
@@ -197,17 +196,14 @@ public class ImageResizer {
 
         Bitmap bm = null;
         try {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(context.getContentResolver().openInputStream(sourceUri), null, options);
 
-
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inJustDecodeBounds = true;
-                BitmapFactory.decodeStream(context.getContentResolver().openInputStream(sourceUri), null, options);
-
-                options.inSampleSize = calculateInSampleSize(options, targetDimension.getWidth(), targetDimension.getHeight());
-                options.inJustDecodeBounds = false;
-
-                bm = BitmapFactory.decodeStream(context.getContentResolver().openInputStream(sourceUri), null, options);
-
+            options.inSampleSize = calculateInSampleSize(options, targetDimension.getWidth(), targetDimension.getHeight());
+            options.inJustDecodeBounds = false;
+            
+            bm = BitmapFactory.decodeStream(context.getContentResolver().openInputStream(sourceUri), null, options);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
