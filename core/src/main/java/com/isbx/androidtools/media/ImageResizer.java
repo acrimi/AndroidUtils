@@ -51,8 +51,7 @@ public class ImageResizer {
     private ImageResizeConfig config;
 
     private int savedFiles = 0;
-
-
+    
     /**
      * Creates a new ImageResizer that will use the given config to scale images.
      *
