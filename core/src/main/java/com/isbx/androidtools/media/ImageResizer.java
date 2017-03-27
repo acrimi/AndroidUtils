@@ -45,11 +45,13 @@ public class ImageResizer {
 
     private static final int MAX_FILES = 10; // TODO handle files more intelligently
     private static final String FILE_NAME_FORMAT = "image%d.jpg";
+    private static final short JPEG_INITIAL_SHORT = (short) 0xffd8;
 
     private Context context;
     private ImageResizeConfig config;
 
     private int savedFiles = 0;
+
 
     /**
      * Creates a new ImageResizer that will use the given config to scale images.
@@ -180,7 +182,7 @@ public class ImageResizer {
     public boolean imageIsJPEG(Uri imageUri) throws Exception {
         DataInputStream ins = new DataInputStream(new BufferedInputStream(context.getContentResolver().openInputStream(imageUri)));
         try {
-            if (ins.readShort() == 0xffd8) {
+            if (ins.readShort() == JPEG_INITIAL_SHORT) {
                 return true;
             } else {
                 return false;
@@ -202,7 +204,7 @@ public class ImageResizer {
 
             options.inSampleSize = calculateInSampleSize(options, targetDimension.getWidth(), targetDimension.getHeight());
             options.inJustDecodeBounds = false;
-            
+
             bm = BitmapFactory.decodeStream(context.getContentResolver().openInputStream(sourceUri), null, options);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -233,14 +235,7 @@ public class ImageResizer {
                 }
                 if (isJpeg) {
                     exif.readExif(context.getContentResolver().openInputStream(sourceUri));
-                } else {
-                    //force bitmap as JPG before reading exif
-                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    out.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-                    byte[] byteArray = stream.toByteArray();
-                    out = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
                 }
-
                 if (exif.getAllTags() != null) {
                     exif.writeExif(out, os);
                 } else {
