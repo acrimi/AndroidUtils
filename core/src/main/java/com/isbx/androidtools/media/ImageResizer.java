@@ -17,6 +17,7 @@ import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.concurrent.Semaphore;
 
 /**
  * A convenience class to resize an image to a new resolution while maintaining aspect ratio. Can be
@@ -43,7 +44,8 @@ import java.util.TimeZone;
  */
 public class ImageResizer {
 
-    private static final int MAX_FILES = 10; // TODO handle files more intelligently
+    private static final int MAX_FILES = 10;
+    private final Semaphore available = new Semaphore(MAX_FILES, true);
     private static final String FILE_NAME_FORMAT = "image%d.jpg";
     private static final short JPEG_INITIAL_SHORT = (short) 0xffd8;
 
@@ -51,7 +53,7 @@ public class ImageResizer {
     private ImageResizeConfig config;
 
     private int savedFiles = 0;
-    
+
     /**
      * Creates a new ImageResizer that will use the given config to scale images.
      *
@@ -100,13 +102,25 @@ public class ImageResizer {
                 Uri smallUri = null;
 
                 if (config.isLargeOutputEnabled()) {
-                    largeUri = createLargeImage(sourceUri);
+                    try{
+                        largeUri = createLargeImage(sourceUri);
+                    } catch (InterruptedException e){
+                        e.printStackTrace();
+                    }
                 }
                 if (config.isMediumOutputEnabled()) {
-                    mediumUri = createMediumImage(sourceUri);
+                    try{
+                        mediumUri = createMediumImage(sourceUri);
+                    } catch (InterruptedException e){
+                        e.printStackTrace();
+                    }
                 }
                 if (config.isSmallOutputEnabled()) {
-                    smallUri = createSmallImage(sourceUri);
+                    try{
+                        smallUri = createSmallImage(sourceUri);
+                    } catch (InterruptedException e){
+                        e.printStackTrace();
+                    }
                 }
 
                 callback.onResizeComplete(largeUri, mediumUri, smallUri);
@@ -126,7 +140,8 @@ public class ImageResizer {
      * @see ImageResizeConfig#getLargeDimension()
      * @see ImageResizer#scaleImage(Uri, ImageResizeConfig.Dimension)
      */
-    public Uri createLargeImage(Uri sourceUri) {
+    public Uri createLargeImage(Uri sourceUri) throws InterruptedException {
+        available.acquire();
         return scaleImage(sourceUri, config.getLargeDimension());
     }
 
@@ -142,7 +157,8 @@ public class ImageResizer {
      * @see ImageResizeConfig#getMediumDimension()
      * @see ImageResizer#scaleImage(Uri, ImageResizeConfig.Dimension)
      */
-    public Uri createMediumImage(Uri sourceUri) {
+    public Uri createMediumImage(Uri sourceUri) throws InterruptedException {
+        available.acquire();
         return scaleImage(sourceUri, config.getMediumDimension());
     }
 
@@ -158,7 +174,8 @@ public class ImageResizer {
      * @see ImageResizeConfig#getSmallDimension()
      * @see ImageResizer#scaleImage(Uri, ImageResizeConfig.Dimension)
      */
-    public Uri createSmallImage(Uri sourceUri) {
+    public Uri createSmallImage(Uri sourceUri) throws InterruptedException {
+        available.acquire();
         return scaleImage(sourceUri, config.getSmallDimension());
     }
 
@@ -250,6 +267,7 @@ public class ImageResizer {
                 if (os != null) {
                     try {
                         os.close();
+                        available.release();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
