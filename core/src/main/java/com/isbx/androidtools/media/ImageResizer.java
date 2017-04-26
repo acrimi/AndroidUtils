@@ -38,6 +38,7 @@ import java.util.TimeZone;
  * </p>
  */
 public class ImageResizer {
+    
     private static final int MAX_FILE_LIFESPAN = 86400000; // One day in milliseconds
     private static final String FILE_NAME_FORMAT = "image%d.jpg";
 
