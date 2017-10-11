@@ -10,8 +10,8 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 26
-        versionCode 5
-        versionName "0.0.5"
+        versionCode 6
+        versionName "0.0.6"
     }
     buildTypes {
         release {
@@ -23,7 +23,7 @@ android {
 
 dependencies {
     compile 'com.github.acrimi.AndroidUtils:core:core_0.0.14'
-    compile 'com.google.android.gms:play-services-maps:11.0.4'
-    compile 'com.google.android.gms:play-services-location:11.0.4'
-    compile 'com.google.android.gms:play-services-places:11.0.4'
+    compile 'com.google.android.gms:play-services-maps:11.4.2'
+    compile 'com.google.android.gms:play-services-location:11.4.2'
+    compile 'com.google.android.gms:play-services-places:11.4.2'
 }

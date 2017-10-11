@@ -28,7 +28,7 @@ Optionally include the `databinding` or `location` modules if necessary:
 
 ```gradle
 dependencies {
-  compile 'com.github.acrimi.AndroidUtils:location:location_0.0.5'
+  compile 'com.github.acrimi.AndroidUtils:location:location_0.0.6'
   compile 'com.github.acrimi.AndroidUtils:databinding:databinding_0.0.4'
 }
 ```
