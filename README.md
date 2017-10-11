@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-  compile 'com.github.acrimi.AndroidUtils:core:core_0.0.11'
+  compile 'com.github.acrimi.AndroidUtils:core:core_0.0.12'
 }
 ```
 

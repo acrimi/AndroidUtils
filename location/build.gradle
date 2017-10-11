@@ -1,15 +1,14 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.1"
+    compileSdkVersion 26
+    buildToolsVersion "24.0.2"
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 24
-        versionCode 3
-        versionName "0.0.3"
+        targetSdkVersion 26
+        versionCode 4
+        versionName "0.0.4"
     }
     buildTypes {
         release {
@@ -20,20 +19,8 @@ android {
 }
 
 dependencies {
-    provided 'com.isbx:android-utils-core:0.0.2'
-    compile 'com.google.android.gms:play-services-maps:9.4.0'
-    compile 'com.google.android.gms:play-services-location:9.4.0'
-    compile 'com.google.android.gms:play-services-places:9.4.0'
-}
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            pom.groupId = 'com.isbx'
-            pom.artifactId = 'android-utils-location'
-            pom.version = android.defaultConfig.versionName
-            pom.packaging = 'aar'
-            repository(url: "file:./archives/")
-        }
-    }
+    provided 'com.github.acrimi.AndroidUtils:core:core_0.0.11'
+    compile 'com.google.android.gms:play-services-maps:11.0.4'
+    compile 'com.google.android.gms:play-services-location:11.0.4'
+    compile 'com.google.android.gms:play-services-places:11.0.4'
 }
