@@ -22,7 +22,7 @@ android {
 }
 
 dependencies {
-    provided 'com.github.acrimi.AndroidUtils:core:core_0.0.11'
+    compile 'com.github.acrimi.AndroidUtils:core:core_0.0.11'
     compile 'com.google.android.gms:play-services-maps:11.0.4'
     compile 'com.google.android.gms:play-services-location:11.0.4'
     compile 'com.google.android.gms:play-services-places:11.0.4'
