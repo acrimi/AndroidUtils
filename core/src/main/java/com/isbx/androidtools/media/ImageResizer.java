@@ -42,8 +42,8 @@ import java.util.TimeZone;
  * </p>
  */
 public class ImageResizer {
-
-    private static final int MAX_FILES = 10; // TODO handle files more intelligently
+    
+    private static final int MAX_FILE_LIFESPAN = 86400000; // One day in milliseconds
     private static final String FILE_NAME_FORMAT = "image%d.jpg";
     private static final short JPEG_INITIAL_SHORT = (short) 0xffd8;
 
@@ -218,8 +218,12 @@ public class ImageResizer {
 
             OutputStream os = null;
             try {
-                if (savedFiles >= MAX_FILES) {
-                    savedFiles = 0;
+                if (savedFiles >= 1) {
+                    String lastFileName = String.format(Locale.US, FILE_NAME_FORMAT, savedFiles - 1);
+                    long lastModified = context.getFileStreamPath(lastFileName).lastModified();
+                    if (System.currentTimeMillis() - lastModified >= MAX_FILE_LIFESPAN) {
+                        clearFiles();
+                    }
                 }
                 String fileName = String.format(Locale.US, FILE_NAME_FORMAT, savedFiles++);
                 os = context.openFileOutput(fileName, Context.MODE_PRIVATE);
@@ -336,7 +340,7 @@ public class ImageResizer {
      * the current one.
      */
     public void clearFiles() {
-        for (int i = 0; i < MAX_FILES; i++) {
+        for (int i = 0; i < savedFiles; i++) {
             String fileName = String.format(Locale.US, FILE_NAME_FORMAT, i);
             context.deleteFile(fileName);
         }
