@@ -3,9 +3,13 @@ package com.isbx.androidtools.media;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
+import android.util.Log;
 
 import com.android.mms.exif.ExifInterface;
+import com.isbx.androidtools.utils.ExifInterfaceAndroid;
+
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -191,6 +195,27 @@ public class ImageResizer {
         }
     };
 
+    public static Bitmap rotateImage(Uri imageUri, Bitmap sourceImage) throws IOException {
+        Bitmap bitmap = sourceImage;
+        ExifInterfaceAndroid exif = new ExifInterfaceAndroid(imageUri.getPath());
+        int rotation = exif.getAttributeInt(ExifInterfaceAndroid.TAG_ORIENTATION, ExifInterfaceAndroid.ORIENTATION_NORMAL);
+        int rotationInDegrees = exifToDegrees(rotation);
+        Log.d("HELLO", String.valueOf(rotationInDegrees));
+
+        //rotate original image because camera takes them side ways
+        Matrix matrix = new Matrix();
+        matrix.postRotate(rotationInDegrees);
+        exif.setAttribute(ExifInterfaceAndroid.TAG_ORIENTATION, String.valueOf(ExifInterfaceAndroid.ORIENTATION_NORMAL));
+        return Bitmap.createBitmap(bitmap , 0, 0, rotationInDegrees % 180 == 0 ? bitmap.getWidth() : bitmap.getHeight(),
+                rotationInDegrees % 180 == 0 ? bitmap.getHeight() : bitmap.getWidth(), matrix, true);
+    }
+
+    private static int exifToDegrees(int exifOrientation) {
+        if (exifOrientation == ExifInterfaceAndroid.ORIENTATION_ROTATE_90) { return 90; }
+        else if (exifOrientation == ExifInterfaceAndroid.ORIENTATION_ROTATE_180) {  return 180; }
+        else if (exifOrientation == ExifInterfaceAndroid.ORIENTATION_ROTATE_270) {  return 270; }
+        return 0;
+    }
 
     public Uri scaleImage(Uri sourceUri, ImageResizeConfig.Dimension targetDimension) {
         Uri dstUri = null;
@@ -232,8 +257,11 @@ public class ImageResizer {
                 } catch(Exception e) {
                     e.printStackTrace();
                 }
+                Log.d("HELLO", "WE IN THE MUFUGGA");
                 if (isJpeg) {
+
                     exif.readExif(context.getContentResolver().openInputStream(sourceUri));
+                    out = rotateImage( sourceUri, out);
                 }
                 if (exif.getAllTags() != null) {
                     exif.writeExif(out, os);
