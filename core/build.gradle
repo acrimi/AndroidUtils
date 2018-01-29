@@ -1,15 +1,17 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 
+group='com.github.acrimi'
+
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.1"
+    compileSdkVersion 26
+    buildToolsVersion "24.0.2"
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 24
-        versionCode 10
-        versionName "0.0.10"
+        targetSdkVersion 26
+        versionCode 14
+        versionName "0.0.14"
     }
     buildTypes {
         release {
@@ -20,22 +22,9 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:24.1.1'
-    compile 'com.android.support:design:24.1.1'
-    compile 'com.google.code.gson:gson:2.4'
+    compile 'com.android.support:appcompat-v7:26.1.0'
+    compile 'com.android.support:design:26.1.0'
+    compile 'com.google.code.gson:gson:2.7'
     compile 'com.loopj.android:android-async-http:1.4.9'
     compile 'com.github.dotloop:aosp-exif:be25ae51ec'
-}
-
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            pom.groupId = 'com.isbx'
-            pom.artifactId = 'android-utils-core'
-            pom.version = android.defaultConfig.versionName
-            pom.packaging = 'aar'
-            repository(url: "file:./archives/")
-        }
-    }
 }

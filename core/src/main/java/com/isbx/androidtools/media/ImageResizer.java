@@ -7,8 +7,12 @@ import android.net.Uri;
 
 import com.android.mms.exif.ExifInterface;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Locale;
@@ -41,12 +45,13 @@ public class ImageResizer {
 
     private static final int MAX_FILES = 10; // TODO handle files more intelligently
     private static final String FILE_NAME_FORMAT = "image%d.jpg";
+    private static final short JPEG_INITIAL_SHORT = (short) 0xffd8;
 
     private Context context;
     private ImageResizeConfig config;
 
     private int savedFiles = 0;
-
+    
     /**
      * Creates a new ImageResizer that will use the given config to scale images.
      *
@@ -172,6 +177,21 @@ public class ImageResizer {
      * @return A {@link Uri} pointing to the scaled image copy, or {@code null} if the operation
      * failed
      */
+
+    public boolean imageIsJPEG(Uri imageUri) throws Exception {
+        DataInputStream ins = new DataInputStream(new BufferedInputStream(context.getContentResolver().openInputStream(imageUri)));
+        try {
+            if (ins.readShort() == JPEG_INITIAL_SHORT) {
+                return true;
+            } else {
+                return false;
+            }
+        } finally {
+            ins.close();
+        }
+    };
+
+
     public Uri scaleImage(Uri sourceUri, ImageResizeConfig.Dimension targetDimension) {
         Uri dstUri = null;
 
@@ -205,8 +225,16 @@ public class ImageResizer {
                 os = context.openFileOutput(fileName, Context.MODE_PRIVATE);
 
                 ExifInterface exif = new ExifInterface();
-                exif.readExif(context.getContentResolver().openInputStream(sourceUri));
 
+                boolean isJpeg = false;
+                try {
+                    isJpeg = imageIsJPEG(sourceUri);
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+                if (isJpeg) {
+                    exif.readExif(context.getContentResolver().openInputStream(sourceUri));
+                }
                 if (exif.getAllTags() != null) {
                     exif.writeExif(out, os);
                 } else {

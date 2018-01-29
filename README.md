@@ -9,12 +9,11 @@ To start using the library, include the `core` module in your gradle project:
 
 ```gradle
 repositories {
-  maven { url 'https://github.com/acrimi/AndroidUtils/raw/master/archives/' }
   maven { url 'https://jitpack.io' }
 }
 
 dependencies {
-  compile 'com.isbx:android-utils-core:0.0.9'
+  compile 'com.github.acrimi.AndroidUtils:core:core_0.0.14'
 }
 ```
 
@@ -29,8 +28,8 @@ Optionally include the `databinding` or `location` modules if necessary:
 
 ```gradle
 dependencies {
-  compile 'com.isbx:android-utils-location:0.0.3'
-  compile 'com.isbx:android-utils-databinding:0.0.2'
+  compile 'com.github.acrimi.AndroidUtils:location:location_0.0.6'
+  compile 'com.github.acrimi.AndroidUtils:databinding:databinding_0.0.4'
 }
 ```
 
