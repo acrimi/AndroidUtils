@@ -1,6 +1,6 @@
 package com.isbx.androidtools.utils;
 
-import android.media.ExifInterface;
+import android.support.media.ExifInterface;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
