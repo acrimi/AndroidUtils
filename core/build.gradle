@@ -27,4 +27,5 @@ dependencies {
     compile 'com.google.code.gson:gson:2.7'
     compile 'com.loopj.android:android-async-http:1.4.9'
     compile 'com.github.dotloop:aosp-exif:be25ae51ec'
+    compile 'com.android.support:exifinterface:25.3.1'
 }
