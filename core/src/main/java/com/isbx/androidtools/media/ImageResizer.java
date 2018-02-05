@@ -196,22 +196,24 @@ public class ImageResizer {
     public Bitmap rotateImage(Uri imageUri, Bitmap sourceImage) throws IOException {
         Bitmap bitmap = sourceImage;
         android.support.media.ExifInterface exif = new android.support.media.ExifInterface(context.getContentResolver().openInputStream(imageUri));
-        int rotation = exif.getAttributeInt(ExifInterfaceAndroid.TAG_ORIENTATION, ExifInterfaceAndroid.ORIENTATION_NORMAL);
+        int rotation = exif.getAttributeInt(android.support.media.ExifInterface.TAG_ORIENTATION, 
+                                            android.support.media.ExifInterface.ORIENTATION_NORMAL);
         int rotationInDegrees = exifToDegrees(rotation);
         Log.i("DEV", String.valueOf(rotationInDegrees) + " degrees rotated");
 
         //rotate original image because camera takes them side ways
         Matrix matrix = new Matrix();
         matrix.postRotate(rotationInDegrees);
-        exif.setAttribute(ExifInterfaceAndroid.TAG_ORIENTATION, String.valueOf(ExifInterfaceAndroid.ORIENTATION_NORMAL));
+        exif.setAttribute(android.support.media.ExifInterface.TAG_ORIENTATION,
+                          String.valueOf(android.support.media.ExifInterface.ORIENTATION_NORMAL));
         return Bitmap.createBitmap(bitmap , 0, 0, bitmap.getWidth(),
             bitmap.getHeight(), matrix, true);
     }
 
     private int exifToDegrees(int exifOrientation) {
-        if (exifOrientation == ExifInterfaceAndroid.ORIENTATION_ROTATE_90) { return 90; }
-        else if (exifOrientation == ExifInterfaceAndroid.ORIENTATION_ROTATE_180) {  return 180; }
-        else if (exifOrientation == ExifInterfaceAndroid.ORIENTATION_ROTATE_270) {  return 270; }
+        if (exifOrientation == android.support.media.ExifInterface.ORIENTATION_ROTATE_90) { return 90; }
+        else if (exifOrientation == android.support.media.ExifInterface.ORIENTATION_ROTATE_180) {  return 180; }
+        else if (exifOrientation == android.support.media.ExifInterface.ORIENTATION_ROTATE_270) {  return 270; }
         return 0;
     }
 
