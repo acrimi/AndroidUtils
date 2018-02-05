@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.android.mms.exif.ExifInterface;
-import com.isbx.androidtools.utils.ExifInterfaceAndroid;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -196,7 +195,7 @@ public class ImageResizer {
 
     public Bitmap rotateImage(Uri imageUri, Bitmap sourceImage) throws IOException {
         Bitmap bitmap = sourceImage;
-        ExifInterfaceAndroid exif = new ExifInterfaceAndroid(context.getContentResolver().openInputStream(imageUri));
+        android.support.media.ExifInterface exif = new android.support.media.ExifInterface(context.getContentResolver().openInputStream(imageUri));
         int rotation = exif.getAttributeInt(ExifInterfaceAndroid.TAG_ORIENTATION, ExifInterfaceAndroid.ORIENTATION_NORMAL);
         int rotationInDegrees = exifToDegrees(rotation);
         Log.i("DEV", String.valueOf(rotationInDegrees) + " degrees rotated");
