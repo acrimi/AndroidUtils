@@ -10,7 +10,6 @@ import android.util.Log;
 import com.android.mms.exif.ExifInterface;
 import com.isbx.androidtools.utils.ExifInterfaceAndroid;
 
-
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
