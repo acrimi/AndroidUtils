@@ -194,7 +194,7 @@ public class ImageResizer {
         }
     };
 
-    public static Bitmap rotateImage(Uri imageUri, Bitmap sourceImage) throws IOException {
+    public Bitmap rotateImage(Uri imageUri, Bitmap sourceImage) throws IOException {
         Bitmap bitmap = sourceImage;
         ExifInterfaceAndroid exif = new ExifInterfaceAndroid(context.getContentResolver().openInputStream(imageUri));
         int rotation = exif.getAttributeInt(ExifInterfaceAndroid.TAG_ORIENTATION, ExifInterfaceAndroid.ORIENTATION_NORMAL);
@@ -209,7 +209,7 @@ public class ImageResizer {
             bitmap.getHeight(), matrix, true);
     }
 
-    private static int exifToDegrees(int exifOrientation) {
+    private int exifToDegrees(int exifOrientation) {
         if (exifOrientation == ExifInterfaceAndroid.ORIENTATION_ROTATE_90) { return 90; }
         else if (exifOrientation == ExifInterfaceAndroid.ORIENTATION_ROTATE_180) {  return 180; }
         else if (exifOrientation == ExifInterfaceAndroid.ORIENTATION_ROTATE_270) {  return 270; }
