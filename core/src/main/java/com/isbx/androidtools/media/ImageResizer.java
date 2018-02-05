@@ -197,11 +197,10 @@ public class ImageResizer {
 
     public static Bitmap rotateImage(Uri imageUri, Bitmap sourceImage) throws IOException {
         Bitmap bitmap = sourceImage;
-        ExifInterfaceAndroid exif = new ExifInterfaceAndroid(imageUri.getPath());
+        ExifInterfaceAndroid exif = new ExifInterfaceAndroid(context.getContentResolver().openInputStream(imageUri));
         int rotation = exif.getAttributeInt(ExifInterfaceAndroid.TAG_ORIENTATION, ExifInterfaceAndroid.ORIENTATION_NORMAL);
         int rotationInDegrees = exifToDegrees(rotation);
-        Log.i("HELLO", String.valueOf(rotationInDegrees));
-        Log.i("HELLO", "degrees rotated");
+        Log.i("DEV", String.valueOf(rotationInDegrees) + " degrees rotated");
 
         //rotate original image because camera takes them side ways
         Matrix matrix = new Matrix();
@@ -220,7 +219,6 @@ public class ImageResizer {
 
     public Uri scaleImage(Uri sourceUri, ImageResizeConfig.Dimension targetDimension) {
         Uri dstUri = null;
-        Log.i("HELLO", "calling scaleImage");
 
         Bitmap bm = null;
         try {
@@ -261,9 +259,7 @@ public class ImageResizer {
                 }
 
                 if (isJpeg) {
-
                     exif.readExif(context.getContentResolver().openInputStream(sourceUri));
-                    Log.i("HELLO", "about to call rotateImage");
                     out = rotateImage( sourceUri, out);
                 }
                 if (exif.getAllTags() != null) {
