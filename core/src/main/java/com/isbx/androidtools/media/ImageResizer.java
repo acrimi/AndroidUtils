@@ -204,8 +204,6 @@ public class ImageResizer {
         //rotate original image because camera takes them side ways
         Matrix matrix = new Matrix();
         matrix.postRotate(rotationInDegrees);
-        exif.setAttribute(android.support.media.ExifInterface.TAG_ORIENTATION,
-                          String.valueOf(android.support.media.ExifInterface.ORIENTATION_NORMAL));
         return Bitmap.createBitmap(bitmap , 0, 0, bitmap.getWidth(),
             bitmap.getHeight(), matrix, true);
     }
@@ -249,7 +247,7 @@ public class ImageResizer {
                 String fileName = String.format(Locale.US, FILE_NAME_FORMAT, savedFiles++);
                 os = context.openFileOutput(fileName, Context.MODE_PRIVATE);
 
-                ExifInterface exif = new ExifInterface();
+                //ExifInterface exif = new ExifInterface();
 
                 boolean isJpeg = false;
                 try {
@@ -259,18 +257,29 @@ public class ImageResizer {
                 }
 
                 if (isJpeg) {
-                    exif.readExif(context.getContentResolver().openInputStream(sourceUri));
                     out = rotateImage( sourceUri, out);
                 }
-                if (exif.getAllTags() != null) {
-                    exif.writeExif(out, os);
-                } else {
-                    ExifInterface exif2 = new ExifInterface();
-                    exif2.addDateTimeStampTag(ExifInterface.TAG_DATE_TIME_ORIGINAL, Calendar.getInstance().getTime().getTime(), TimeZone.getDefault());
-                    exif2.writeExif(out, os);
-                }
+                out.compress(Bitmap.CompressFormat.JPEG, 100, os);
+//                 if (exif.getAllTags() != null) {
+//                     out.compress(Bitmap.CompressFormat.JPEG, 100, os);
+//                     //exif.writeExif(out, os);
+                    
+//                 } else {
+//                     out.compress(Bitmap.CompressFormat.JPEG, 100, os);
+//                     //ExifInterface exif2 = new ExifInterface();
+//                     //exif2.addDateTimeStampTag(ExifInterface.TAG_DATE_TIME_ORIGINAL, Calendar.getInstance().getTime().getTime(), TimeZone.getDefault());
+//                     //exif2.writeExif(out, os);
+//                 }
 
                 dstUri = Uri.fromFile(context.getFileStreamPath(fileName));
+                android.support.media.ExifInterface exif = 
+                    new android.support.media.ExifInterface(context.getContentResolver().openInputStream(dstUri));
+                 exif.setAttribute(android.support.media.ExifInterface.TAG_ORIENTATION,
+                          String.valueOf(android.support.media.ExifInterface.ORIENTATION_NORMAL));
+                exif.setAttribute(android.support.media.ExifInterface.TAG_DATETIME_ORIGINAL,
+                                  String.valueOf(Calendar.getInstance().getTime().getTime()));
+                exif.saveAttributes();
+                
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
