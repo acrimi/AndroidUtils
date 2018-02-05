@@ -207,8 +207,8 @@ public class ImageResizer {
         Matrix matrix = new Matrix();
         matrix.postRotate(rotationInDegrees);
         exif.setAttribute(ExifInterfaceAndroid.TAG_ORIENTATION, String.valueOf(ExifInterfaceAndroid.ORIENTATION_NORMAL));
-        return Bitmap.createBitmap(bitmap , 0, 0, rotationInDegrees % 180 == 0 ? bitmap.getWidth() : bitmap.getHeight(),
-                rotationInDegrees % 180 == 0 ? bitmap.getHeight() : bitmap.getWidth(), matrix, true);
+        return Bitmap.createBitmap(bitmap , 0, 0, bitmap.getWidth(),
+            bitmap.getWidth(), matrix, true);
     }
 
     private static int exifToDegrees(int exifOrientation) {
