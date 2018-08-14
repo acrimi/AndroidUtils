@@ -15,6 +15,8 @@ public class S3Credentials {
     private String policy;
     private String signature;
     private String bucket;
+    @SerializedName("Content-Type")
+    private String contentType;
 
     /**
      * Returns the public AWS access key to use for authenticating requests with these credentials.
@@ -141,5 +143,13 @@ public class S3Credentials {
      */
     public void setUniqueFilePrefix(String uniqueFilePrefix) {
         this.uniqueFilePrefix = uniqueFilePrefix;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 }

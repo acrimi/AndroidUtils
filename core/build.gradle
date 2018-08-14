@@ -22,7 +22,7 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:26.1.0'
+    compile 'com.android.support:exifinterface:26.1.0'
     compile 'com.android.support:design:26.1.0'
     compile 'com.google.code.gson:gson:2.7'
     compile 'com.loopj.android:android-async-http:1.4.9'

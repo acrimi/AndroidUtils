@@ -260,7 +260,7 @@ public class UploadManager {
                     params.put("success_action_status", DEFAULT_SUCCESS_STATUS);
                     params.put("acl", acl);
                     params.put("file", in);
-
+                    params.put("Content-Type", credentials.getContentType());
                     final int index = i;
                     final String url = String.format(S3_URL_FORMAT, credentials.getBucket());
                     client.post(url, params, new AsyncHttpResponseHandler() {
