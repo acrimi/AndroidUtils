@@ -1,5 +1,5 @@
 package com.isbx.androidtools.networking.s3;
-
+import com.google.gson.annotations.SerializedName;
 /**
  * This class contains all of the credential information necessary to make an authenticated upload
  * request to an Amazon S3 bucket. Generally an instance of this class will be returned by an
