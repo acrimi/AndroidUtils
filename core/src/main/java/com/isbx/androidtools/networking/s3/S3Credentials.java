@@ -15,7 +15,7 @@ public class S3Credentials {
     private String policy;
     private String signature;
     private String bucket;
-    @SerializedName("Content-Type");
+    @SerializedName("Content-Type")
     private String contentType;
 
     /**
