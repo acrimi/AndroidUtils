@@ -1,5 +1,5 @@
 package com.isbx.androidtools.networking.s3;
-
+import com.google.gson.annotations.SerializedName;
 /**
  * This class contains all of the credential information necessary to make an authenticated upload
  * request to an Amazon S3 bucket. Generally an instance of this class will be returned by an
@@ -15,6 +15,8 @@ public class S3Credentials {
     private String policy;
     private String signature;
     private String bucket;
+    @SerializedName("Content-Type")
+    private String contentType;
 
     /**
      * Returns the public AWS access key to use for authenticating requests with these credentials.
@@ -123,6 +125,23 @@ public class S3Credentials {
         this.signature = signature;
     }
 
+    /**
+     * Returns the content type of the media to be uploaded
+     *
+     * @return The Content-Type of the S3 upload file e.g. image/jpeg
+     */
+    public String getContentType() {
+        return contentType;
+    }
+
+    /**
+     * Sets the Content-Type of the media file to be uploaded
+     *
+     * @param contentType the Content-Type of the file to be uploaded
+     */
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
     /**
      * Returns a prefix that has been requested to be prepended to the keys of any files uploaded
      * using these credentials.
