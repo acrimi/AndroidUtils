@@ -197,7 +197,6 @@ public class ImageResizer {
         int rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 
                                             ExifInterface.ORIENTATION_NORMAL);
         int rotationInDegrees = exifToDegrees(rotation);
-        Log.i("DEV", String.valueOf(rotationInDegrees) + " degrees rotated");
 
         //rotate original image because camera takes them side ways
         Matrix matrix = new Matrix();
