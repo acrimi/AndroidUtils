@@ -3,10 +3,10 @@ package com.isbx.androidtools.media;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
-
-import com.android.mms.exif.ExifInterface;
-
+import android.util.Log;
+import android.support.media.ExifInterface;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -191,6 +191,26 @@ public class ImageResizer {
         }
     };
 
+    public Bitmap rotateImage(Uri imageUri, Bitmap sourceImage) throws IOException {
+        Bitmap bitmap = sourceImage;
+        ExifInterface exif = new ExifInterface(context.getContentResolver().openInputStream(imageUri));
+        int rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 
+                                            ExifInterface.ORIENTATION_NORMAL);
+        int rotationInDegrees = exifToDegrees(rotation);
+
+        //rotate original image because camera takes them side ways
+        Matrix matrix = new Matrix();
+        matrix.postRotate(rotationInDegrees);
+        return Bitmap.createBitmap(bitmap , 0, 0, bitmap.getWidth(),
+            bitmap.getHeight(), matrix, true);
+    }
+
+    private int exifToDegrees(int exifOrientation) {
+        if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) { return 90; }
+        else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {  return 180; }
+        else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {  return 270; }
+        return 0;
+    }
 
     public Uri scaleImage(Uri sourceUri, ImageResizeConfig.Dimension targetDimension) {
         Uri dstUri = null;
@@ -223,27 +243,26 @@ public class ImageResizer {
                 }
                 String fileName = String.format(Locale.US, FILE_NAME_FORMAT, savedFiles++);
                 os = context.openFileOutput(fileName, Context.MODE_PRIVATE);
-
-                ExifInterface exif = new ExifInterface();
-
                 boolean isJpeg = false;
                 try {
                     isJpeg = imageIsJPEG(sourceUri);
                 } catch(Exception e) {
                     e.printStackTrace();
                 }
-                if (isJpeg) {
-                    exif.readExif(context.getContentResolver().openInputStream(sourceUri));
-                }
-                if (exif.getAllTags() != null) {
-                    exif.writeExif(out, os);
-                } else {
-                    ExifInterface exif2 = new ExifInterface();
-                    exif2.addDateTimeStampTag(ExifInterface.TAG_DATE_TIME_ORIGINAL, Calendar.getInstance().getTime().getTime(), TimeZone.getDefault());
-                    exif2.writeExif(out, os);
-                }
 
+                if (isJpeg) {
+                    out = rotateImage( sourceUri, out);
+                }
+                out.compress(Bitmap.CompressFormat.JPEG, 100, os);
                 dstUri = Uri.fromFile(context.getFileStreamPath(fileName));
+                ExifInterface exif = 
+                    new ExifInterface(context.getContentResolver().openInputStream(dstUri));
+                 exif.setAttribute(ExifInterface.TAG_ORIENTATION,
+                          String.valueOf(ExifInterface.ORIENTATION_NORMAL));
+                exif.setAttribute(ExifInterface.TAG_DATETIME_ORIGINAL,
+                                  String.valueOf(Calendar.getInstance().getTime().getTime()));
+                exif.saveAttributes();
+                
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
