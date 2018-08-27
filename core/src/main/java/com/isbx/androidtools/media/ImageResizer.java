@@ -43,7 +43,7 @@ import java.util.TimeZone;
  */
 public class ImageResizer {
 
-    private static final int MAX_FILES = 10; // TODO handle files more intelligently
+    private static final int MAX_FILE_LIFESPAN = 86400000; // One day in milliseconds
     private static final String FILE_NAME_FORMAT = "image%d.jpg";
     private static final short JPEG_INITIAL_SHORT = (short) 0xffd8;
 
@@ -51,7 +51,8 @@ public class ImageResizer {
     private ImageResizeConfig config;
 
     private int savedFiles = 0;
-    
+    private int prunedFiles = 0;
+
     /**
      * Creates a new ImageResizer that will use the given config to scale images.
      *
@@ -238,9 +239,7 @@ public class ImageResizer {
 
             OutputStream os = null;
             try {
-                if (savedFiles >= MAX_FILES) {
-                    savedFiles = 0;
-                }
+                pruneFiles();
                 String fileName = String.format(Locale.US, FILE_NAME_FORMAT, savedFiles++);
                 os = context.openFileOutput(fileName, Context.MODE_PRIVATE);
                 boolean isJpeg = false;
@@ -350,16 +349,23 @@ public class ImageResizer {
     }
 
     /**
-     * Deletes any temporary files that may have been created by previous resize operations. This
-     * will clear temporary files created by <strong>all</strong> ImageResizer instances, not just
-     * the current one.
+     * Deletes any files that are more than a day old. If all files are past this mark
+     * then the savedFiles and prunedFiles counts are reset.
      */
-    public void clearFiles() {
-        for (int i = 0; i < MAX_FILES; i++) {
-            String fileName = String.format(Locale.US, FILE_NAME_FORMAT, i);
+    public void pruneFiles() {
+       for (int i = 0; i < savedFiles; i++) {
+          if (prunedFiles == savedFiles) {
+            savedFiles = 0;
+            prunedFiles = 0;
+            break;
+          }
+          String fileName = String.format(Locale.US, FILE_NAME_FORMAT, i);
+          long lastModified = context.getFileStreamPath(fileName).lastModified();
+          if (System.currentTimeInMillis() - lastModified >= MAX_FILE_LIFESPAN) {
             context.deleteFile(fileName);
-        }
-        savedFiles = 0;
+            prunedFiles++;
+          }
+       }
     }
 
     /**
