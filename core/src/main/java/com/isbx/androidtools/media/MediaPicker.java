@@ -452,7 +452,7 @@ public class MediaPicker implements ActivityCompat.OnRequestPermissionsResultCal
      *
      * @see MediaPicker#launchCameraIntent()
      */
-    private void launchCamera() {
+    public void launchCamera() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && hasCameraPermissionInManifest()) {
             // Starting in marshmallow, if app declares CAMERA permission but doesn't have it granted,
             // the image capture intent will throw a security exception, so we need to make sure it's granted
@@ -487,7 +487,7 @@ public class MediaPicker implements ActivityCompat.OnRequestPermissionsResultCal
     /**
      * Fires an intent to launch the built in media library app
      */
-    private void launchLibrary() {
+    public void launchLibrary() {
         startActivityForResult(new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI), REQUEST_PHOTO_LIBRARY);
     }
 
@@ -498,7 +498,7 @@ public class MediaPicker implements ActivityCompat.OnRequestPermissionsResultCal
      *
      * @see MediaPicker#launchVideoIntent()
      */
-    private void launchVideo() {
+    public void launchVideo() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && hasCameraPermissionInManifest()) {
             // Starting in marshmallow, if app declares CAMERA permission but doesn't have it granted,
             // the image capture intent will throw a security exception, so we need to make sure it's granted
