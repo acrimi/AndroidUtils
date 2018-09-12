@@ -238,7 +238,7 @@ extends <a href="http://d.android.com/reference/java/lang/Object.html?is-externa
 </tr>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/isbx/androidtools/networking/UploadManager.html#uploadImage-android.net.Uri-com.isbx.androidtools.networking.UploadManager.SuffixRule-com.isbx.androidtools.networking.UploadManager.UploadListener-">uploadImage</a></span>(<a href="http://d.android.com/reference/android/net/Uri.html?is-external=true" title="class or interface in android.net">Uri</a>&nbsp;imageUri,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/isbx/androidtools/networking/UploadManager.html#upload-android.net.Uri-com.isbx.androidtools.networking.UploadManager.SuffixRule-com.isbx.androidtools.networking.UploadManager.UploadListener-">upload</a></span>(<a href="http://d.android.com/reference/android/net/Uri.html?is-external=true" title="class or interface in android.net">Uri</a>&nbsp;imageUri,
            <a href="../../../../com/isbx/androidtools/networking/UploadManager.SuffixRule.html" title="interface in com.isbx.androidtools.networking">UploadManager.SuffixRule</a>&nbsp;suffixRule,
            <a href="../../../../com/isbx/androidtools/networking/UploadManager.UploadListener.html" title="interface in com.isbx.androidtools.networking">UploadManager.UploadListener</a>&nbsp;listener)</code>
 <div class="block">Uploads an image to S3 in the background using the given <a href="../../../../com/isbx/androidtools/networking/UploadManager.SuffixRule.html" title="interface in com.isbx.androidtools.networking"><code>UploadManager.SuffixRule</code></a> to configure the
@@ -247,7 +247,7 @@ extends <a href="http://d.android.com/reference/java/lang/Object.html?is-externa
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/isbx/androidtools/networking/UploadManager.html#uploadImage-android.net.Uri-com.isbx.androidtools.networking.UploadManager.UploadListener-">uploadImage</a></span>(<a href="http://d.android.com/reference/android/net/Uri.html?is-external=true" title="class or interface in android.net">Uri</a>&nbsp;imageUri,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/isbx/androidtools/networking/UploadManager.html#upload-android.net.Uri-com.isbx.androidtools.networking.UploadManager.UploadListener-">upload</a></span>(<a href="http://d.android.com/reference/android/net/Uri.html?is-external=true" title="class or interface in android.net">Uri</a>&nbsp;mediaUri,
            <a href="../../../../com/isbx/androidtools/networking/UploadManager.UploadListener.html" title="interface in com.isbx.androidtools.networking">UploadManager.UploadListener</a>&nbsp;listener)</code>
 <div class="block">Uploads an image to S3 in the background.</div>
 </td>
@@ -385,37 +385,37 @@ extends <a href="http://d.android.com/reference/java/lang/Object.html?is-externa
 </dl>
 </li>
 </ul>
-<a name="uploadImage-android.net.Uri-com.isbx.androidtools.networking.UploadManager.UploadListener-">
+<a name="upload-android.net.Uri-com.isbx.androidtools.networking.UploadManager.UploadListener-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>uploadImage</h4>
-<pre>public&nbsp;void&nbsp;uploadImage(<a href="http://d.android.com/reference/android/net/Uri.html?is-external=true" title="class or interface in android.net">Uri</a>&nbsp;imageUri,
+<h4>upload</h4>
+<pre>public&nbsp;void&nbsp;upload(<a href="http://d.android.com/reference/android/net/Uri.html?is-external=true" title="class or interface in android.net">Uri</a>&nbsp;mediaUri,
                         <a href="../../../../com/isbx/androidtools/networking/UploadManager.UploadListener.html" title="interface in com.isbx.androidtools.networking">UploadManager.UploadListener</a>&nbsp;listener)</pre>
-<div class="block">Uploads an image to S3 in the background.</div>
+<div class="block">Uploads a media object to S3 in the background.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>imageUri</code> - A <a href="http://d.android.com/reference/android/net/Uri.html?is-external=true" title="class or interface in android.net"><code>Uri</code></a> representing the image to be uploaded</dd>
+<dd><code>mediaUri</code> - A <a href="http://d.android.com/reference/android/net/Uri.html?is-external=true" title="class or interface in android.net"><code>Uri</code></a> representing the image to be uploaded</dd>
 <dd><code>listener</code> - An <a href="../../../../com/isbx/androidtools/networking/UploadManager.UploadListener.html" title="interface in com.isbx.androidtools.networking"><code>UploadManager.UploadListener</code></a> that will be notified of upload completion, error,
                  and progress events</dd>
 </dl>
 </li>
 </ul>
-<a name="uploadImage-android.net.Uri-com.isbx.androidtools.networking.UploadManager.SuffixRule-com.isbx.androidtools.networking.UploadManager.UploadListener-">
+<a name="upload-android.net.Uri-com.isbx.androidtools.networking.UploadManager.SuffixRule-com.isbx.androidtools.networking.UploadManager.UploadListener-">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
-<h4>uploadImage</h4>
-<pre>public&nbsp;void&nbsp;uploadImage(<a href="http://d.android.com/reference/android/net/Uri.html?is-external=true" title="class or interface in android.net">Uri</a>&nbsp;imageUri,
+<h4>upload</h4>
+<pre>public&nbsp;void&nbsp;upload(<a href="http://d.android.com/reference/android/net/Uri.html?is-external=true" title="class or interface in android.net">Uri</a>&nbsp;mediaUri,
                         <a href="../../../../com/isbx/androidtools/networking/UploadManager.SuffixRule.html" title="interface in com.isbx.androidtools.networking">UploadManager.SuffixRule</a>&nbsp;suffixRule,
                         <a href="../../../../com/isbx/androidtools/networking/UploadManager.UploadListener.html" title="interface in com.isbx.androidtools.networking">UploadManager.UploadListener</a>&nbsp;listener)</pre>
-<div class="block">Uploads an image to S3 in the background using the given <a href="../../../../com/isbx/androidtools/networking/UploadManager.SuffixRule.html" title="interface in com.isbx.androidtools.networking"><code>UploadManager.SuffixRule</code></a> to configure the
+<div class="block">Uploads a media object to S3 in the background using the given <a href="../../../../com/isbx/androidtools/networking/UploadManager.SuffixRule.html" title="interface in com.isbx.androidtools.networking"><code>UploadManager.SuffixRule</code></a> to configure the
  uploaded S3 key.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>imageUri</code> - A <a href="http://d.android.com/reference/android/net/Uri.html?is-external=true" title="class or interface in android.net"><code>Uri</code></a> representing the image to be uploaded</dd>
+<dd><code>mediaUri</code> - A <a href="http://d.android.com/reference/android/net/Uri.html?is-external=true" title="class or interface in android.net"><code>Uri</code></a> representing the image to be uploaded</dd>
 <dd><code>suffixRule</code> - A <a href="../../../../com/isbx/androidtools/networking/UploadManager.SuffixRule.html" title="interface in com.isbx.androidtools.networking"><code>UploadManager.SuffixRule</code></a> that will be used to configure the uploaded S3 key for
                    this file</dd>
 <dd><code>listener</code> - An <a href="../../../../com/isbx/androidtools/networking/UploadManager.UploadListener.html" title="interface in com.isbx.androidtools.networking"><code>UploadManager.UploadListener</code></a> that will be notified of upload completion, error,

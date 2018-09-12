@@ -48,7 +48,6 @@ public class UploadManager {
     private static final String S3_URL_FORMAT = "https://%s.s3.amazonaws.com";
     private static final String DEFAULT_ACL = "public-read";
     private static final int DEFAULT_SUCCESS_STATUS = 201;
-    private static final String DEFAULT_IMAGE_EXTENSION = "jpg";
     private static final int UPLOAD_TIMEOUT_MS = 30000;
 
     /**
@@ -144,7 +143,7 @@ public class UploadManager {
     }
 
     /**
-     * Uploads an media to S3 in the background using the given {@link SuffixRule} to configure the
+     * Uploads a media object to S3 in the background using the given {@link SuffixRule} to configure the
      * uploaded S3 key.
      *
      * @param mediaUri A {@link Uri} representing the media to be uploaded
@@ -160,7 +159,7 @@ public class UploadManager {
     }
 
     /**
-     * Uploads an media to S3 in the background using the given {@link SuffixRule} to configure the
+     * Uploads a media object to S3 in the background using the given {@link SuffixRule} to configure the
      * uploaded S3 key with the ACL parameter (private/public)
      *
      * @param mediaUri A {@link Uri} representing the media to be uploaded
