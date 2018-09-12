@@ -1,10 +1,12 @@
 package com.isbx.androidtools.networking;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
+import android.webkit.MimeTypeMap;
 
 import com.isbx.androidtools.networking.s3.S3Credentials;
 import com.isbx.androidtools.networking.s3.S3CredentialsProvider;
@@ -12,9 +14,11 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.SyncHttpClient;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -89,7 +93,7 @@ public class UploadManager {
      *                 and progress events
      */
     public void uploadImages(Uri[] imageUris, UploadListener listener) {
-        ImageUploadTask uploadTask = new ImageUploadTask(context, credentialsProvider, listener);
+        UploadTask uploadTask = new UploadTask(context, credentialsProvider, listener);
         uploadTask.execute(imageUris);
     }
 
@@ -104,7 +108,7 @@ public class UploadManager {
      *                 and progress events
      */
     public void uploadImages(Uri[] imageUris, SuffixRule suffixRule, UploadListener listener) {
-        ImageUploadTask uploadTask = new ImageUploadTask(context, credentialsProvider, listener);
+        UploadTask uploadTask = new UploadTask(context, credentialsProvider, listener);
         uploadTask.suffixRule = suffixRule;
         uploadTask.execute(imageUris);
     }
@@ -121,56 +125,56 @@ public class UploadManager {
      *                 and progress events
      */
     public void uploadImages(Uri[] imageUris, SuffixRule suffixRule, String acl, UploadListener listener) {
-        ImageUploadTask uploadTask = new ImageUploadTask(context, credentialsProvider, listener);
+        UploadTask uploadTask = new UploadTask(context, credentialsProvider, listener);
         uploadTask.suffixRule = suffixRule;
         uploadTask.acl = acl;
         uploadTask.execute(imageUris);
     }
 
     /**
-     * Uploads an image to S3 in the background.
+     * Uploads a media object to S3 in the background.
      *
-     * @param imageUri A {@link Uri} representing the image to be uploaded
+     * @param mediaUri A {@link Uri} representing the media to be uploaded
      * @param listener An {@link UploadListener} that will be notified of upload completion, error,
      *                 and progress events
      */
-    public void uploadImage(Uri imageUri, UploadListener listener) {
-        ImageUploadTask uploadTask = new ImageUploadTask(context, credentialsProvider, listener);
-        uploadTask.execute(imageUri);
+    public void upload(Uri mediaUri, UploadListener listener) {
+        UploadTask uploadTask = new UploadTask(context, credentialsProvider, listener);
+        uploadTask.execute(mediaUri);
     }
 
     /**
-     * Uploads an image to S3 in the background using the given {@link SuffixRule} to configure the
+     * Uploads an media to S3 in the background using the given {@link SuffixRule} to configure the
      * uploaded S3 key.
      *
-     * @param imageUri A {@link Uri} representing the image to be uploaded
+     * @param mediaUri A {@link Uri} representing the media to be uploaded
      * @param suffixRule A {@link SuffixRule} that will be used to configure the uploaded S3 key for
      *                   this file
      * @param listener An {@link UploadListener} that will be notified of upload completion, error,
      *                 and progress events
      */
-    public void uploadImage(Uri imageUri, SuffixRule suffixRule, UploadListener listener) {
-        ImageUploadTask uploadTask = new ImageUploadTask(context, credentialsProvider, listener);
+    public void upload(Uri mediaUri, SuffixRule suffixRule, UploadListener listener) {
+        UploadTask uploadTask = new UploadTask(context, credentialsProvider, listener);
         uploadTask.suffixRule = suffixRule;
-        uploadTask.execute(imageUri);
+        uploadTask.execute(mediaUri);
     }
 
     /**
-     * Uploads an image to S3 in the background using the given {@link SuffixRule} to configure the
+     * Uploads an media to S3 in the background using the given {@link SuffixRule} to configure the
      * uploaded S3 key with the ACL parameter (private/public)
      *
-     * @param imageUri A {@link Uri} representing the image to be uploaded
+     * @param mediaUri A {@link Uri} representing the media to be uploaded
      * @param suffixRule A {@link SuffixRule} that will be used to configure the uploaded S3 key for
      *                   this file
      * @param acl A string {@link String}s representing the ACL
      * @param listener An {@link UploadListener} that will be notified of upload completion, error,
      *                 and progress events
      */
-    public void uploadImage(Uri imageUri, SuffixRule suffixRule, String acl, UploadListener listener) {
-        ImageUploadTask uploadTask = new ImageUploadTask(context, credentialsProvider, listener);
+    public void upload(Uri mediaUri, SuffixRule suffixRule, String acl, UploadListener listener) {
+        UploadTask uploadTask = new UploadTask(context, credentialsProvider, listener);
         uploadTask.suffixRule = suffixRule;
         uploadTask.acl = acl;
-        uploadTask.execute(imageUri);
+        uploadTask.execute(mediaUri);
     }
 
 
@@ -191,15 +195,15 @@ public class UploadManager {
      * uploaded.
      * </p>
      */
-    private static class ImageUploadTask extends AsyncTask<Uri, Integer, String[]> {
-        private Context context;
+    private static class UploadTask extends AsyncTask<Uri, Integer, String[]> {
+        private WeakReference<Context> context;
         private S3CredentialsProvider credentialsProvider;
         private UploadListener listener;
         private SuffixRule suffixRule = SUFFIX_INCREMENTAL;
         private String acl = DEFAULT_ACL;
 
         /**
-         * Creates a new ImageUploadTask instance. The instance will use {@code credentialsProvider}
+         * Creates a new UploadTask instance. The instance will use {@code credentialsProvider}
          * for configuring it's upload parameters.
          *
          * @param context The current {@link Context}
@@ -208,8 +212,8 @@ public class UploadManager {
          * @param listener A {@link UploadListener} to be notified of completion, error, and
          *                 progress events
          */
-        public ImageUploadTask(Context context, S3CredentialsProvider credentialsProvider, UploadListener listener) {
-            this.context = context;
+        public UploadTask(Context context, S3CredentialsProvider credentialsProvider, UploadListener listener) {
+            this.context = new WeakReference<>(context);
             this.credentialsProvider = credentialsProvider;
             this.listener = listener;
         }
@@ -237,9 +241,16 @@ public class UploadManager {
                     break;
                 }
 
+                Context ctx = context.get();
+                if (ctx == null) {
+                    publishFailure(new IllegalStateException("Context is dead"), i);
+                    cancel(true);
+                    break;
+                }
+
                 InputStream in = null;
                 try {
-                    in = context.getContentResolver().openInputStream(uri);
+                    in = ctx.getContentResolver().openInputStream(uri);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                     publishFailure(e, i);
@@ -247,11 +258,19 @@ public class UploadManager {
                     break;
                 }
 
+                String extension;
+                if (uri.getScheme().equals(ContentResolver.SCHEME_CONTENT)) {
+                    String mimeType = ctx.getContentResolver().getType(uri);
+                    extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType);
+                } else {
+                    extension = MimeTypeMap.getFileExtensionFromUrl(String.valueOf(Uri.fromFile(new File(uri.getPath()))));
+                }
+
                 if (in != null) {
                     SyncHttpClient client = new SyncHttpClient();
                     client.setTimeout(UPLOAD_TIMEOUT_MS);
                     RequestParams params = new RequestParams();
-                    final String key = credentials.getUniqueFilePrefix()+suffixRule.getSuffix(uri, i)+"."+DEFAULT_IMAGE_EXTENSION;
+                    final String key = credentials.getUniqueFilePrefix()+suffixRule.getSuffix(uri, i)+"."+extension;
                     params.setForceMultipartEntityContentType(true);
                     params.put("key", key);
                     params.put("AWSAccessKeyId", credentials.getAWSAccessKeyId());
