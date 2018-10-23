@@ -44,7 +44,7 @@ import java.util.TimeZone;
 public class ImageResizer {
 
     private static final int MAX_FILES = 10; // TODO handle files more intelligently
-    private static final String FILE_NAME_FORMAT = "image%d.jpg";
+    private static final String FILE_NAME_FORMAT = "image%d.%s";
     private static final short JPEG_INITIAL_SHORT = (short) 0xffd8;
 
     private Context context;
@@ -240,14 +240,16 @@ public class ImageResizer {
                 if (savedFiles >= MAX_FILES) {
                     savedFiles = 0;
                 }
-                String fileName = String.format(Locale.US, FILE_NAME_FORMAT, savedFiles++);
-                os = context.openFileOutput(fileName, Context.MODE_PRIVATE);
+
                 boolean isJpeg = false;
                 try {
                     isJpeg = imageIsJPEG(sourceUri);
                 } catch(Exception e) {
                     e.printStackTrace();
                 }
+
+                String fileName = String.format(Locale.US, FILE_NAME_FORMAT, savedFiles++, isJpeg ? "jpg" : "png");
+                os = context.openFileOutput(fileName, Context.MODE_PRIVATE);
 
                 if (isJpeg) {
                     out = rotateImage( sourceUri, out);
