@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -259,14 +260,13 @@ public class ImageResizer {
                 }
 
                 dstUri = Uri.fromFile(context.getFileStreamPath(fileName));
-                ExifInterface exif = 
-                    new ExifInterface(context.getContentResolver().openInputStream(dstUri));
-                 exif.setAttribute(ExifInterface.TAG_ORIENTATION,
-                          String.valueOf(ExifInterface.ORIENTATION_NORMAL));
-                exif.setAttribute(ExifInterface.TAG_DATETIME_ORIGINAL,
-                                  String.valueOf(Calendar.getInstance().getTime().getTime()));
-                exif.saveAttributes();
-                
+
+                if (isJpeg) {
+                    ExifInterface exif = new ExifInterface(context.getContentResolver().openInputStream(dstUri));
+                    exif.setAttribute(ExifInterface.TAG_ORIENTATION, String.valueOf(ExifInterface.ORIENTATION_NORMAL));
+                    exif.setAttribute(ExifInterface.TAG_DATETIME_ORIGINAL, String.valueOf(new Date().getTime()));
+                    exif.saveAttributes();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
