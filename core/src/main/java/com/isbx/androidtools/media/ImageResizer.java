@@ -162,23 +162,7 @@ public class ImageResizer {
         return scaleImage(sourceUri, config.getSmallDimension());
     }
 
-    /**
-     * Creates a copy of the given image scaled to the size specified by {@code targetDimension}.
-     *
-     * <p>
-     * This transformation maintains the aspect ratio of the source image. If the aspect ratio of
-     * {@code targetDimension} is not equal to the aspect ratio of the source image, the scaled
-     * image will be made as large as possible without exceeding the dimensions of
-     * {@code targetDimension}.
-     * </p>
-     *
-     * @param sourceUri The {@link Uri} of the image to be resized
-     * @param targetDimension The desired dimensions of the copied image
-     * @return A {@link Uri} pointing to the scaled image copy, or {@code null} if the operation
-     * failed
-     */
-
-    public boolean imageIsJPEG(Uri imageUri) throws Exception {
+    private boolean imageIsJPEG(Uri imageUri) throws Exception {
         DataInputStream ins = new DataInputStream(new BufferedInputStream(context.getContentResolver().openInputStream(imageUri)));
         try {
             if (ins.readShort() == JPEG_INITIAL_SHORT) {
@@ -191,7 +175,7 @@ public class ImageResizer {
         }
     };
 
-    public Bitmap rotateImage(Uri imageUri, Bitmap sourceImage) throws IOException {
+    private Bitmap rotateImage(Uri imageUri, Bitmap sourceImage) throws IOException {
         Bitmap bitmap = sourceImage;
         ExifInterface exif = new ExifInterface(context.getContentResolver().openInputStream(imageUri));
         int rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 
@@ -212,6 +196,21 @@ public class ImageResizer {
         return 0;
     }
 
+    /**
+     * Creates a copy of the given image scaled to the size specified by {@code targetDimension}.
+     *
+     * <p>
+     * This transformation maintains the aspect ratio of the source image. If the aspect ratio of
+     * {@code targetDimension} is not equal to the aspect ratio of the source image, the scaled
+     * image will be made as large as possible without exceeding the dimensions of
+     * {@code targetDimension}.
+     * </p>
+     *
+     * @param sourceUri The {@link Uri} of the image to be resized
+     * @param targetDimension The desired dimensions of the copied image
+     * @return A {@link Uri} pointing to the scaled image copy, or {@code null} if the operation
+     * failed
+     */
     public Uri scaleImage(Uri sourceUri, ImageResizeConfig.Dimension targetDimension) {
         Uri dstUri = null;
 
@@ -252,8 +251,11 @@ public class ImageResizer {
 
                 if (isJpeg) {
                     out = rotateImage( sourceUri, out);
+                    out.compress(Bitmap.CompressFormat.JPEG, 100, os);
+                } else {
+                    out.compress(Bitmap.CompressFormat.PNG, 100, os);
                 }
-                out.compress(Bitmap.CompressFormat.JPEG, 100, os);
+
                 dstUri = Uri.fromFile(context.getFileStreamPath(fileName));
                 ExifInterface exif = 
                     new ExifInterface(context.getContentResolver().openInputStream(dstUri));
