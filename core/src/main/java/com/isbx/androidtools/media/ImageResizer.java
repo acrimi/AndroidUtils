@@ -360,7 +360,9 @@ public class ImageResizer {
      */
     public void clearFiles() {
         for (int i = 0; i < MAX_FILES; i++) {
-            String fileName = String.format(Locale.US, FILE_NAME_FORMAT, i);
+            String fileName = String.format(Locale.US, FILE_NAME_FORMAT, i, "jpg");
+            context.deleteFile(fileName);
+            fileName = String.format(Locale.US, FILE_NAME_FORMAT, i, "png");
             context.deleteFile(fileName);
         }
         savedFiles = 0;
