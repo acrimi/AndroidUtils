@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-  compile 'com.github.acrimi.AndroidUtils:core:core_0.0.19'
+  compile 'com.github.acrimi.AndroidUtils:core:core_0.0.20'
 }
 ```
 
@@ -28,8 +28,8 @@ Optionally include the `databinding` or `location` modules if necessary:
 
 ```gradle
 dependencies {
-  compile 'com.github.acrimi.AndroidUtils:location:location_0.0.7'
-  compile 'com.github.acrimi.AndroidUtils:databinding:databinding_0.0.5'
+  compile 'com.github.acrimi.AndroidUtils:location:location_0.0.9'
+  compile 'com.github.acrimi.AndroidUtils:databinding:databinding_0.0.6'
 }
 ```
 
